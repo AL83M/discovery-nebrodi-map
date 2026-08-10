@@ -24,5 +24,18 @@
     "modello": "684f69ffdd114762b74741d4b62156a8",
     "descrizione": "Fotogrammetria 3D - Discovery Nebrodi",
     "foto": ""
-  }
+  },
+  {
+  "nome": "Torre della Strega",
+  "localita": "Maranello",
+  "provincia": "Modena",
+  "lat": 44.505932,
+  "lon": 10.84439,
+  "categoria": "Rudere",
+  "anno_scansione": 2026,
+  "piattaforma": "sketchfab",
+  "modello": "948afe9a5740461d86efec52ca8db1f0",
+  "descrizione": "Fotogrammetria 3D - Discovery Nebrodi",
+  "foto": ""
+}
 ]
