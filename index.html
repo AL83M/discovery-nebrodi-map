@@ -313,14 +313,11 @@ luoghi.forEach(function(luogo) {
 
   const descrizione = document.createElement("p");
   descrizione.textContent = luogo.descrizione;
-
-  const pulsante = document.createElement("button");
+if (luogo.tipo === "panorama360") {
+  pulsante.textContent = "Esplora a 360°";
+} else {
   pulsante.textContent = "Esplora in 3D";
-  pulsante.className = "open3d";
-
-  pulsante.addEventListener("click", function() {
-    open3D(luogo);
-  });
+}
 
   contenuto.appendChild(titolo);
   contenuto.appendChild(descrizione);
@@ -336,26 +333,79 @@ luoghi.forEach(function(luogo) {
 
 function open3D(luogo) {
 
-  const overlay = document.getElementById("viewerOverlay");
-  const frame = document.getElementById("viewerFrame");
+  const overlay =
+    document.getElementById("viewerOverlay");
 
-  if (luogo.piattaforma === "sketchfab") {
+  const frame =
+    document.getElementById("viewerFrame");
+
+
+  // ===============================
+  // FOTO PANORAMICA 360°
+  // ===============================
+
+  if (
+    luogo.tipo === "panorama360" &&
+    luogo.foto360
+  ) {
+
+    frame.src =
+      "https://cdn.pannellum.org/2.5/pannellum.htm" +
+      "?panorama=" +
+      encodeURIComponent(luogo.foto360) +
+      "&autoLoad=true";
+
+  }
+
+
+  // ===============================
+  // SKETCHFAB
+  // ===============================
+
+  else if (
+    luogo.piattaforma === "sketchfab"
+  ) {
+
     frame.src =
       "https://sketchfab.com/models/" +
       luogo.modello +
       "/embed?autostart=1&ui_theme=dark";
+
   }
 
-  else if (luogo.piattaforma === "luma") {
-    frame.src = luogo.modello;
+
+  // ===============================
+  // LUMA
+  // ===============================
+
+  else if (
+    luogo.piattaforma === "luma"
+  ) {
+
+    frame.src =
+      luogo.modello;
+
   }
+
+
+  // ===============================
+  // NON SUPPORTATO
+  // ===============================
 
   else {
-    alert("Piattaforma non supportata");
+
+    alert(
+      "Contenuto non supportato"
+    );
+
     return;
+
   }
 
-  overlay.style.display = "flex";
+
+  overlay.style.display =
+    "flex";
+
 }
 
 function close3D() {
