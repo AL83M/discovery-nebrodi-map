@@ -92,6 +92,61 @@
   content: "⬡";
   color: white;
 }
+    /* ===============================
+   OTTIMIZZAZIONE MOBILE replYca
+   =============================== */
+
+.leaflet-popup-content-wrapper {
+  border-radius: 14px;
+}
+
+.leaflet-popup-content {
+  margin: 16px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.open3d {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+
+@media (max-width: 768px) {
+
+  #map {
+    height: 100dvh;
+  }
+
+  #viewerBox {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  #closeViewer {
+    top: 16px;
+    right: 16px;
+    width: 46px;
+    height: 46px;
+    font-size: 28px;
+  }
+
+  .leaflet-popup-content {
+    min-width: 220px;
+    max-width: 78vw;
+  }
+
+  .leaflet-control-layers {
+    font-size: 14px;
+  }
+
+  .marker-3d {
+    width: 34px;
+    height: 34px;
+    font-size: 18px;
+  }
+}
   </style>
 </head>
 
