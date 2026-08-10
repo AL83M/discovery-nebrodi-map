@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>replYca - Gestione Luoghi</title>
+<title>replYca - Gestione Archivio</title>
 
 <style>
   body {
@@ -44,7 +44,7 @@
     width: 100%;
     box-sizing: border-box;
     padding: 12px;
-    border-radius: 7px;
+    border-radius: 8px;
     border: 1px solid #444;
     background: #1d1d1d;
     color: white;
@@ -54,6 +54,14 @@
   textarea {
     min-height: 90px;
     resize: vertical;
+  }
+
+  .tipo-box {
+    margin-top: 20px;
+    padding: 18px;
+    border: 1px solid #333;
+    border-radius: 10px;
+    background: #171717;
   }
 
   .buttons {
@@ -66,7 +74,7 @@
   button {
     padding: 13px 20px;
     border: 0;
-    border-radius: 7px;
+    border-radius: 8px;
     background: white;
     color: black;
     font-weight: bold;
@@ -79,7 +87,7 @@
   }
 
   button:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
   }
 
@@ -111,9 +119,13 @@
     color: #ffb7b7;
   }
 
-  .loading {
+  .info {
     background: #272727;
     color: #ddd;
+  }
+
+  .hidden {
+    display: none;
   }
 </style>
 </head>
@@ -123,12 +135,22 @@
 <div class="container">
 
   <h1>replYca</h1>
-  <div class="subtitle">Gestione archivio 3D</div>
+  <div class="subtitle">Gestione archivio digitale</div>
+
+  <label for="tipo">Tipo di contenuto</label>
+
+  <select id="tipo" onchange="aggiornaTipo()">
+    <option value="fotogrammetria">⬡ Fotogrammetria 3D</option>
+    <option value="panorama360">◉ Foto 360°</option>
+  </select>
+
 
   <label for="nome">Nome del luogo</label>
   <input id="nome" placeholder="Ponte dei Ninfi">
 
+
   <label for="regione">Regione</label>
+
   <select id="regione" onchange="aggiornaProvince()">
     <option value="">Seleziona regione...</option>
     <option>Abruzzo</option>
@@ -153,15 +175,20 @@
     <option>Veneto</option>
   </select>
 
+
   <label for="provincia">Provincia</label>
+
   <select id="provincia">
     <option value="">Seleziona prima la regione...</option>
   </select>
 
+
   <label for="localita">Comune</label>
   <input id="localita" placeholder="San Fratello">
 
+
   <label for="lat">Latitudine</label>
+
   <input
     id="lat"
     type="number"
@@ -169,7 +196,9 @@
     placeholder="37.984268"
   >
 
+
   <label for="lon">Longitudine</label>
+
   <input
     id="lon"
     type="number"
@@ -177,7 +206,9 @@
     placeholder="14.581352"
   >
 
+
   <label for="categoria">Categoria</label>
+
   <select id="categoria">
     <option>Ponte storico</option>
     <option>Rudere</option>
@@ -186,24 +217,64 @@
     <option>Archeologia</option>
     <option>Monumento</option>
     <option>Paesaggio</option>
+    <option>Panorama</option>
     <option>Altro</option>
   </select>
 
-  <label for="piattaforma">Piattaforma 3D</label>
-  <select id="piattaforma">
-    <option value="sketchfab">Sketchfab</option>
-    <option value="luma">Luma AI</option>
-  </select>
 
-  <label for="link">Link modello</label>
-  <input
-    id="link"
-    type="url"
-    placeholder="https://sketchfab.com/3d-models/..."
-  >
+  <!-- ==========================
+       FOTOGRAMMETRIA
+       ========================== -->
+
+  <div id="campi3d" class="tipo-box">
+
+    <strong>Fotogrammetria 3D</strong>
+
+    <label for="piattaforma">Piattaforma</label>
+
+    <select id="piattaforma">
+      <option value="sketchfab">Sketchfab</option>
+    </select>
+
+
+    <label for="linkModello">Link Sketchfab</label>
+
+    <input
+      id="linkModello"
+      type="url"
+      placeholder="https://sketchfab.com/3d-models/..."
+    >
+
+  </div>
+
+
+  <!-- ==========================
+       PANORAMA 360
+       ========================== -->
+
+  <div id="campi360" class="tipo-box hidden">
+
+    <strong>Foto panoramica 360°</strong>
+
+    <label for="link360">URL della foto 360°</label>
+
+    <input
+      id="link360"
+      type="url"
+      placeholder="https://esempio.it/panorama.jpg"
+    >
+
+    <p style="color:#888; font-size:13px;">
+      Deve essere una foto equirettangolare 360°.
+    </p>
+
+  </div>
+
 
   <label for="descrizione">Descrizione</label>
-  <textarea id="descrizione">Fotogrammetria 3D - replYca</textarea>
+
+  <textarea id="descrizione">Archivio digitale - replYca</textarea>
+
 
   <div class="buttons">
 
@@ -232,15 +303,18 @@
 
   </div>
 
+
   <div id="risultato"></div>
+
   <div id="stato"></div>
 
 </div>
 
+
 <script>
 
 // =====================================================
-// BACKEND replYca
+// BACKEND
 // =====================================================
 
 const BACKEND_URL =
@@ -248,162 +322,97 @@ const BACKEND_URL =
 
 
 // =====================================================
-// PROVINCE PER REGIONE
+// PROVINCE
 // =====================================================
 
 const provincePerRegione = {
 
   "Abruzzo": [
-    "Chieti",
-    "L'Aquila",
-    "Pescara",
-    "Teramo"
+    "Chieti", "L'Aquila", "Pescara", "Teramo"
   ],
 
   "Basilicata": [
-    "Matera",
-    "Potenza"
+    "Matera", "Potenza"
   ],
 
   "Calabria": [
-    "Catanzaro",
-    "Cosenza",
-    "Crotone",
-    "Reggio Calabria",
-    "Vibo Valentia"
+    "Catanzaro", "Cosenza", "Crotone",
+    "Reggio Calabria", "Vibo Valentia"
   ],
 
   "Campania": [
-    "Avellino",
-    "Benevento",
-    "Caserta",
-    "Napoli",
-    "Salerno"
+    "Avellino", "Benevento", "Caserta",
+    "Napoli", "Salerno"
   ],
 
   "Emilia-Romagna": [
-    "Bologna",
-    "Ferrara",
-    "Forlì-Cesena",
-    "Modena",
-    "Parma",
-    "Piacenza",
-    "Ravenna",
-    "Reggio Emilia",
-    "Rimini"
+    "Bologna", "Ferrara", "Forlì-Cesena",
+    "Modena", "Parma", "Piacenza",
+    "Ravenna", "Reggio Emilia", "Rimini"
   ],
 
   "Friuli-Venezia Giulia": [
-    "Gorizia",
-    "Pordenone",
-    "Trieste",
-    "Udine"
+    "Gorizia", "Pordenone", "Trieste", "Udine"
   ],
 
   "Lazio": [
-    "Frosinone",
-    "Latina",
-    "Rieti",
-    "Roma",
-    "Viterbo"
+    "Frosinone", "Latina", "Rieti",
+    "Roma", "Viterbo"
   ],
 
   "Liguria": [
-    "Genova",
-    "Imperia",
-    "La Spezia",
-    "Savona"
+    "Genova", "Imperia", "La Spezia", "Savona"
   ],
 
   "Lombardia": [
-    "Bergamo",
-    "Brescia",
-    "Como",
-    "Cremona",
-    "Lecco",
-    "Lodi",
-    "Mantova",
-    "Milano",
-    "Monza e Brianza",
-    "Pavia",
-    "Sondrio",
-    "Varese"
+    "Bergamo", "Brescia", "Como", "Cremona",
+    "Lecco", "Lodi", "Mantova", "Milano",
+    "Monza e Brianza", "Pavia", "Sondrio", "Varese"
   ],
 
   "Marche": [
-    "Ancona",
-    "Ascoli Piceno",
-    "Fermo",
-    "Macerata",
-    "Pesaro e Urbino"
+    "Ancona", "Ascoli Piceno", "Fermo",
+    "Macerata", "Pesaro e Urbino"
   ],
 
   "Molise": [
-    "Campobasso",
-    "Isernia"
+    "Campobasso", "Isernia"
   ],
 
   "Piemonte": [
-    "Alessandria",
-    "Asti",
-    "Biella",
-    "Cuneo",
-    "Novara",
-    "Torino",
-    "Verbano-Cusio-Ossola",
+    "Alessandria", "Asti", "Biella", "Cuneo",
+    "Novara", "Torino", "Verbano-Cusio-Ossola",
     "Vercelli"
   ],
 
   "Puglia": [
-    "Bari",
-    "Barletta-Andria-Trani",
-    "Brindisi",
-    "Foggia",
-    "Lecce",
-    "Taranto"
+    "Bari", "Barletta-Andria-Trani",
+    "Brindisi", "Foggia", "Lecce", "Taranto"
   ],
 
   "Sardegna": [
-    "Cagliari",
-    "Nuoro",
-    "Oristano",
-    "Sassari",
-    "Sud Sardegna"
+    "Cagliari", "Nuoro", "Oristano",
+    "Sassari", "Sud Sardegna"
   ],
 
   "Sicilia": [
-    "Agrigento",
-    "Caltanissetta",
-    "Catania",
-    "Enna",
-    "Messina",
-    "Palermo",
-    "Ragusa",
-    "Siracusa",
-    "Trapani"
+    "Agrigento", "Caltanissetta", "Catania",
+    "Enna", "Messina", "Palermo",
+    "Ragusa", "Siracusa", "Trapani"
   ],
 
   "Toscana": [
-    "Arezzo",
-    "Firenze",
-    "Grosseto",
-    "Livorno",
-    "Lucca",
-    "Massa-Carrara",
-    "Pisa",
-    "Pistoia",
-    "Prato",
-    "Siena"
+    "Arezzo", "Firenze", "Grosseto", "Livorno",
+    "Lucca", "Massa-Carrara", "Pisa",
+    "Pistoia", "Prato", "Siena"
   ],
 
   "Trentino-Alto Adige": [
-    "Bolzano",
-    "Trento"
+    "Bolzano", "Trento"
   ],
 
   "Umbria": [
-    "Perugia",
-    "Terni"
+    "Perugia", "Terni"
   ],
 
   "Valle d'Aosta": [
@@ -411,16 +420,44 @@ const provincePerRegione = {
   ],
 
   "Veneto": [
-    "Belluno",
-    "Padova",
-    "Rovigo",
-    "Treviso",
-    "Venezia",
-    "Verona",
-    "Vicenza"
+    "Belluno", "Padova", "Rovigo",
+    "Treviso", "Venezia", "Verona", "Vicenza"
   ]
 
 };
+
+
+// =====================================================
+// CAMBIO TIPO CONTENUTO
+// =====================================================
+
+function aggiornaTipo() {
+
+  const tipo =
+    document.getElementById("tipo").value;
+
+  const campi3d =
+    document.getElementById("campi3d");
+
+  const campi360 =
+    document.getElementById("campi360");
+
+
+  if (tipo === "fotogrammetria") {
+
+    campi3d.classList.remove("hidden");
+
+    campi360.classList.add("hidden");
+
+  } else {
+
+    campi3d.classList.add("hidden");
+
+    campi360.classList.remove("hidden");
+
+  }
+
+}
 
 
 // =====================================================
@@ -437,28 +474,37 @@ function aggiornaProvince() {
 
   selectProvincia.innerHTML = "";
 
+
   if (!regione) {
 
-    const option = document.createElement("option");
+    const option =
+      document.createElement("option");
 
     option.value = "";
-    option.textContent = "Seleziona prima la regione...";
+
+    option.textContent =
+      "Seleziona prima la regione...";
 
     selectProvincia.appendChild(option);
 
     return;
   }
 
-  const province =
-    provincePerRegione[regione] || [];
 
   const placeholder =
     document.createElement("option");
 
   placeholder.value = "";
-  placeholder.textContent = "Seleziona provincia...";
+
+  placeholder.textContent =
+    "Seleziona provincia...";
 
   selectProvincia.appendChild(placeholder);
+
+
+  const province =
+    provincePerRegione[regione] || [];
+
 
   province.forEach(function(provincia) {
 
@@ -466,6 +512,7 @@ function aggiornaProvince() {
       document.createElement("option");
 
     option.value = provincia;
+
     option.textContent = provincia;
 
     selectProvincia.appendChild(option);
@@ -480,14 +527,18 @@ function aggiornaProvince() {
 // =====================================================
 
 let luogoGenerato = null;
+
 let jsonGenerato = "";
 
 
 // =====================================================
-// GENERA LUOGO
+// GENERA
 // =====================================================
 
 function genera() {
+
+  const tipo =
+    document.getElementById("tipo").value;
 
   const nome =
     document.getElementById("nome").value.trim();
@@ -502,25 +553,21 @@ function genera() {
     document.getElementById("localita").value.trim();
 
   const lat =
-    parseFloat(document.getElementById("lat").value);
+    parseFloat(
+      document.getElementById("lat").value
+    );
 
   const lon =
-    parseFloat(document.getElementById("lon").value);
+    parseFloat(
+      document.getElementById("lon").value
+    );
 
   const categoria =
     document.getElementById("categoria").value;
 
-  const piattaforma =
-    document.getElementById("piattaforma").value;
-
-  const link =
-    document.getElementById("link").value.trim();
-
   const descrizione =
     document.getElementById("descrizione").value.trim();
 
-
-  // Controllo campi obbligatori
 
   if (
     !nome ||
@@ -528,100 +575,153 @@ function genera() {
     !provincia ||
     !localita ||
     isNaN(lat) ||
-    isNaN(lon) ||
-    !link
+    isNaN(lon)
   ) {
 
     alert(
-      "Compila nome, regione, provincia, comune, coordinate e link."
+      "Compila nome, regione, provincia, comune e coordinate."
     );
 
     return;
   }
 
 
-  // Controllo coordinate
+  if (
+    lat < -90 ||
+    lat > 90 ||
+    lon < -180 ||
+    lon > 180
+  ) {
 
-  if (lat < -90 || lat > 90) {
-
-    alert("Latitudine non valida.");
-
-    return;
-  }
-
-  if (lon < -180 || lon > 180) {
-
-    alert("Longitudine non valida.");
+    alert(
+      "Le coordinate inserite non sono valide."
+    );
 
     return;
   }
 
 
-  let modello = link;
+  // ===================================================
+  // FOTOGRAMMETRIA
+  // ===================================================
+
+  if (tipo === "fotogrammetria") {
+
+    const link =
+      document.getElementById("linkModello")
+        .value.trim();
 
 
-  // =====================================================
-  // ESTRAZIONE ID SKETCHFAB
-  // =====================================================
-
-  if (piattaforma === "sketchfab") {
-
-    const match =
-      link.match(/([a-f0-9]{32})(?:\?|\/|$)/i);
-
-    if (match) {
-
-      modello = match[1];
-
-    } else {
+    if (!link) {
 
       alert(
-        "Non riesco a trovare l'ID del modello Sketchfab nel link."
+        "Inserisci il link Sketchfab."
       );
 
       return;
     }
 
+
+    const match =
+      link.match(
+        /([a-f0-9]{32})(?:\?|\/|$)/i
+      );
+
+
+    if (!match) {
+
+      alert(
+        "Non riesco a trovare l'ID Sketchfab nel link."
+      );
+
+      return;
+    }
+
+
+    luogoGenerato = {
+
+      nome: nome,
+
+      tipo: "fotogrammetria",
+
+      regione: regione,
+
+      provincia: provincia,
+
+      localita: localita,
+
+      lat: lat,
+
+      lon: lon,
+
+      categoria: categoria,
+
+      anno_scansione:
+        new Date().getFullYear(),
+
+      piattaforma: "sketchfab",
+
+      modello: match[1],
+
+      descrizione: descrizione,
+
+      foto: ""
+
+    };
+
   }
 
 
-  // =====================================================
-  // CREA OGGETTO LUOGO
-  // =====================================================
+  // ===================================================
+  // PANORAMA 360
+  // ===================================================
 
-  luogoGenerato = {
+  else {
 
-    nome: nome,
-
-    regione: regione,
-
-    provincia: provincia,
-
-    localita: localita,
-
-    lat: lat,
-
-    lon: lon,
-
-    categoria: categoria,
-
-    anno_scansione:
-      new Date().getFullYear(),
-
-    piattaforma: piattaforma,
-
-    modello: modello,
-
-    descrizione: descrizione,
-
-    foto: ""
-
-  };
+    const link360 =
+      document.getElementById("link360")
+        .value.trim();
 
 
-  // =====================================================
-  // GENERA JSON
-  // =====================================================
+    if (!link360) {
+
+      alert(
+        "Inserisci l'URL della foto 360°."
+      );
+
+      return;
+    }
+
+
+    luogoGenerato = {
+
+      nome: nome,
+
+      tipo: "panorama360",
+
+      regione: regione,
+
+      provincia: provincia,
+
+      localita: localita,
+
+      lat: lat,
+
+      lon: lon,
+
+      categoria: categoria,
+
+      anno_scansione:
+        new Date().getFullYear(),
+
+      immagine: link360,
+
+      descrizione: descrizione
+
+    };
+
+  }
+
 
   jsonGenerato =
     JSON.stringify(
@@ -634,8 +734,10 @@ function genera() {
   const risultato =
     document.getElementById("risultato");
 
+
   risultato.textContent =
     jsonGenerato;
+
 
   risultato.style.display =
     "block";
@@ -644,12 +746,13 @@ function genera() {
   document.getElementById("copia")
     .style.display = "inline-block";
 
+
   document.getElementById("pubblica")
     .style.display = "inline-block";
 
 
   mostraStato(
-    "Luogo generato correttamente. Controlla i dati e poi premi Pubblica sulla mappa.",
+    "Contenuto generato correttamente.",
     "success"
   );
 
@@ -666,17 +769,21 @@ async function copiaJSON() {
     return;
   }
 
+
   try {
 
     await navigator.clipboard.writeText(
       jsonGenerato
     );
 
+
     const bottone =
       document.getElementById("copia");
 
+
     bottone.textContent =
       "Copiato ✓";
+
 
     setTimeout(function() {
 
@@ -685,10 +792,11 @@ async function copiaJSON() {
 
     }, 1500);
 
+
   } catch (errore) {
 
     alert(
-      "Non sono riuscito a copiare automaticamente il JSON."
+      "Non riesco a copiare automaticamente il JSON."
     );
 
   }
@@ -697,7 +805,7 @@ async function copiaJSON() {
 
 
 // =====================================================
-// PUBBLICA SULLA MAPPA
+// PUBBLICA
 // =====================================================
 
 async function pubblicaLuogo() {
@@ -712,19 +820,36 @@ async function pubblicaLuogo() {
   }
 
 
+  /*
+    ATTENZIONE:
+    Il backend attuale supporta già le fotogrammetrie.
+
+    Nel prossimo passaggio lo aggiorneremo
+    per accettare anche panorama360.
+  */
+
+
+  if (
+    luogoGenerato.tipo === "panorama360"
+  ) {
+
+    mostraStato(
+      "La gestione 360° è pronta nell'admin. Ora dobbiamo aggiornare il backend replYca prima di pubblicarla.",
+      "info"
+    );
+
+    return;
+  }
+
+
   const bottone =
     document.getElementById("pubblica");
+
 
   bottone.disabled = true;
 
   bottone.textContent =
     "Pubblicazione...";
-
-
-  mostraStato(
-    "Invio dati a replYca Backend...",
-    "loading"
-  );
 
 
   try {
@@ -733,26 +858,23 @@ async function pubblicaLuogo() {
       await fetch(
         BACKEND_URL,
         {
+
           method: "POST",
 
           headers: {
+
             "Content-Type":
               "text/plain;charset=utf-8"
+
           },
 
           body:
-            JSON.stringify(luogoGenerato)
+            JSON.stringify(
+              luogoGenerato
+            )
+
         }
       );
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Errore HTTP " + response.status
-      );
-
-    }
 
 
     const risposta =
@@ -763,8 +885,7 @@ async function pubblicaLuogo() {
 
       throw new Error(
         risposta.errore ||
-        risposta.message ||
-        "Il backend ha restituito un errore."
+        "Errore durante la pubblicazione."
       );
 
     }
@@ -772,7 +893,7 @@ async function pubblicaLuogo() {
 
     mostraStato(
       risposta.messaggio ||
-      "Luogo pubblicato correttamente sulla mappa.",
+      "Pubblicato correttamente.",
       "success"
     );
 
@@ -780,15 +901,12 @@ async function pubblicaLuogo() {
     bottone.textContent =
       "Pubblicato ✓";
 
-    bottone.disabled = true;
-
 
   } catch (errore) {
 
-    console.error(errore);
 
     mostraStato(
-      "Errore durante la pubblicazione: " +
+      "Errore: " +
       errore.message,
       "error"
     );
@@ -797,7 +915,9 @@ async function pubblicaLuogo() {
     bottone.textContent =
       "Riprova pubblicazione";
 
-    bottone.disabled = false;
+
+    bottone.disabled =
+      false;
 
   }
 
@@ -805,19 +925,25 @@ async function pubblicaLuogo() {
 
 
 // =====================================================
-// MOSTRA STATO
+// STATO
 // =====================================================
 
-function mostraStato(messaggio, tipo) {
+function mostraStato(
+  messaggio,
+  tipo
+) {
 
   const stato =
     document.getElementById("stato");
 
+
   stato.textContent =
     messaggio;
 
+
   stato.className =
     tipo;
+
 
   stato.style.display =
     "block";
