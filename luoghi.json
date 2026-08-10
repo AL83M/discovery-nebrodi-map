@@ -37,19 +37,5 @@
     "modello": "948afe9a5740461d86efec52ca8db1f0",
     "descrizione": "Fotogrammetria 3D - Discovery Nebrodi",
     "foto": ""
-  },
-  {
-    "nome": "Bunker di Capo Rosso",
-    "regione": "Sicilia",
-    "provincia": "Palermo",
-    "localita": "Pollina",
-    "lat": 38.01613,
-    "lon": 14.1156,
-    "categoria": "Rudere",
-    "anno_scansione": 2026,
-    "piattaforma": "luma",
-    "modello": "https://lumalabs.ai/capture/e55010e6-73cf-48f1-b00a-276b9b18a2fe",
-    "descrizione": "Fotogrammetria 3D - replYca",
-    "foto": ""
   }
 ]
