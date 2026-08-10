@@ -714,7 +714,7 @@ function genera() {
       anno_scansione:
         new Date().getFullYear(),
 
-      immagine: link360,
+      foto360: link360,
 
       descrizione: descrizione
 
@@ -820,28 +820,6 @@ async function pubblicaLuogo() {
   }
 
 
-  /*
-    ATTENZIONE:
-    Il backend attuale supporta già le fotogrammetrie.
-
-    Nel prossimo passaggio lo aggiorneremo
-    per accettare anche panorama360.
-  */
-
-
-  if (
-    luogoGenerato.tipo === "panorama360"
-  ) {
-
-    mostraStato(
-      "La gestione 360° è pronta nell'admin. Ora dobbiamo aggiornare il backend replYca prima di pubblicarla.",
-      "info"
-    );
-
-    return;
-  }
-
-
   const bottone =
     document.getElementById("pubblica");
 
@@ -850,6 +828,12 @@ async function pubblicaLuogo() {
 
   bottone.textContent =
     "Pubblicazione...";
+
+
+  mostraStato(
+    "Invio al backend replYca...",
+    "info"
+  );
 
 
   try {
