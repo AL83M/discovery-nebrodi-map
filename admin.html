@@ -125,10 +125,10 @@
   <h1>replYca</h1>
   <div class="subtitle">Gestione archivio 3D</div>
 
-  <label>Nome del luogo</label>
+  <label for="nome">Nome del luogo</label>
   <input id="nome" placeholder="Ponte dei Ninfi">
 
-  <label>Regione</label>
+  <label for="regione">Regione</label>
   <select id="regione" onchange="aggiornaProvince()">
     <option value="">Seleziona regione...</option>
     <option>Abruzzo</option>
@@ -153,21 +153,31 @@
     <option>Veneto</option>
   </select>
 
-  <label>Provincia</label>
+  <label for="provincia">Provincia</label>
   <select id="provincia">
     <option value="">Seleziona prima la regione...</option>
   </select>
 
-  <label>Comune</label>
+  <label for="localita">Comune</label>
   <input id="localita" placeholder="San Fratello">
 
-  <label>Latitudine</label>
-  <input id="lat" placeholder="37.984268">
+  <label for="lat">Latitudine</label>
+  <input
+    id="lat"
+    type="number"
+    step="any"
+    placeholder="37.984268"
+  >
 
-  <label>Longitudine</label>
-  <input id="lon" placeholder="14.581352">
+  <label for="lon">Longitudine</label>
+  <input
+    id="lon"
+    type="number"
+    step="any"
+    placeholder="14.581352"
+  >
 
-  <label>Categoria</label>
+  <label for="categoria">Categoria</label>
   <select id="categoria">
     <option>Ponte storico</option>
     <option>Rudere</option>
@@ -179,28 +189,30 @@
     <option>Altro</option>
   </select>
 
-  <label>Piattaforma 3D</label>
+  <label for="piattaforma">Piattaforma 3D</label>
   <select id="piattaforma">
     <option value="sketchfab">Sketchfab</option>
     <option value="luma">Luma AI</option>
   </select>
 
-  <label>Link modello</label>
+  <label for="link">Link modello</label>
   <input
     id="link"
+    type="url"
     placeholder="https://sketchfab.com/3d-models/..."
   >
 
-  <label>Descrizione</label>
+  <label for="descrizione">Descrizione</label>
   <textarea id="descrizione">Fotogrammetria 3D - replYca</textarea>
 
   <div class="buttons">
 
-    <button onclick="genera()">
+    <button type="button" onclick="genera()">
       Genera luogo
     </button>
 
     <button
+      type="button"
       id="copia"
       class="secondary"
       onclick="copiaJSON()"
@@ -210,6 +222,7 @@
     </button>
 
     <button
+      type="button"
       id="pubblica"
       onclick="pubblicaLuogo()"
       style="display:none;"
@@ -227,11 +240,11 @@
 <script>
 
 // =====================================================
-// BACKEND
+// BACKEND replYca
 // =====================================================
 
 const BACKEND_URL =
-  "INCOLLA_QUI_URL_APPS_SCRIPT";
+  "https://script.google.com/macros/s/AKfycbz1kw3A7PgLTbOJWyVLUfwn2_bwkeepfdRkeYsxBktNuszUq_hTjie4p5Va0sEd8bP4/exec";
 
 
 // =====================================================
@@ -426,12 +439,10 @@ function aggiornaProvince() {
 
   if (!regione) {
 
-    const option =
-      document.createElement("option");
+    const option = document.createElement("option");
 
     option.value = "";
-    option.textContent =
-      "Seleziona prima la regione...";
+    option.textContent = "Seleziona prima la regione...";
 
     selectProvincia.appendChild(option);
 
@@ -445,8 +456,7 @@ function aggiornaProvince() {
     document.createElement("option");
 
   placeholder.value = "";
-  placeholder.textContent =
-    "Seleziona provincia...";
+  placeholder.textContent = "Seleziona provincia...";
 
   selectProvincia.appendChild(placeholder);
 
@@ -492,14 +502,10 @@ function genera() {
     document.getElementById("localita").value.trim();
 
   const lat =
-    parseFloat(
-      document.getElementById("lat").value
-    );
+    parseFloat(document.getElementById("lat").value);
 
   const lon =
-    parseFloat(
-      document.getElementById("lon").value
-    );
+    parseFloat(document.getElementById("lon").value);
 
   const categoria =
     document.getElementById("categoria").value;
@@ -513,6 +519,8 @@ function genera() {
   const descrizione =
     document.getElementById("descrizione").value.trim();
 
+
+  // Controllo campi obbligatori
 
   if (
     !nome ||
@@ -532,17 +540,34 @@ function genera() {
   }
 
 
+  // Controllo coordinate
+
+  if (lat < -90 || lat > 90) {
+
+    alert("Latitudine non valida.");
+
+    return;
+  }
+
+  if (lon < -180 || lon > 180) {
+
+    alert("Longitudine non valida.");
+
+    return;
+  }
+
+
   let modello = link;
 
 
-  // ==========================================
-  // ID SKETCHFAB AUTOMATICO
-  // ==========================================
+  // =====================================================
+  // ESTRAZIONE ID SKETCHFAB
+  // =====================================================
 
   if (piattaforma === "sketchfab") {
 
     const match =
-      link.match(/([a-f0-9]{32})(?:\?|$)/i);
+      link.match(/([a-f0-9]{32})(?:\?|\/|$)/i);
 
     if (match) {
 
@@ -551,7 +576,7 @@ function genera() {
     } else {
 
       alert(
-        "Non riesco a trovare l'ID Sketchfab nel link."
+        "Non riesco a trovare l'ID del modello Sketchfab nel link."
       );
 
       return;
@@ -559,6 +584,10 @@ function genera() {
 
   }
 
+
+  // =====================================================
+  // CREA OGGETTO LUOGO
+  // =====================================================
 
   luogoGenerato = {
 
@@ -590,6 +619,10 @@ function genera() {
   };
 
 
+  // =====================================================
+  // GENERA JSON
+  // =====================================================
+
   jsonGenerato =
     JSON.stringify(
       luogoGenerato,
@@ -616,7 +649,7 @@ function genera() {
 
 
   mostraStato(
-    "Luogo generato correttamente.",
+    "Luogo generato correttamente. Controlla i dati e poi premi Pubblica sulla mappa.",
     "success"
   );
 
@@ -627,34 +660,44 @@ function genera() {
 // COPIA JSON
 // =====================================================
 
-function copiaJSON() {
+async function copiaJSON() {
 
   if (!jsonGenerato) {
     return;
   }
 
-  navigator.clipboard.writeText(
-    jsonGenerato
-  );
+  try {
 
-  const bottone =
-    document.getElementById("copia");
+    await navigator.clipboard.writeText(
+      jsonGenerato
+    );
 
-  bottone.textContent =
-    "Copiato ✓";
-
-  setTimeout(function() {
+    const bottone =
+      document.getElementById("copia");
 
     bottone.textContent =
-      "Copia JSON";
+      "Copiato ✓";
 
-  }, 1500);
+    setTimeout(function() {
+
+      bottone.textContent =
+        "Copia JSON";
+
+    }, 1500);
+
+  } catch (errore) {
+
+    alert(
+      "Non sono riuscito a copiare automaticamente il JSON."
+    );
+
+  }
 
 }
 
 
 // =====================================================
-// PUBBLICA
+// PUBBLICA SULLA MAPPA
 // =====================================================
 
 async function pubblicaLuogo() {
@@ -663,19 +706,6 @@ async function pubblicaLuogo() {
 
     alert(
       "Prima premi Genera luogo."
-    );
-
-    return;
-  }
-
-
-  if (
-    BACKEND_URL ===
-    "https://script.google.com/macros/s/AKfycbz1kw3A7PgLTbOJWyVLUfwn2_bwkeepfdRkeYsxBktNuszUq_hTjie4p5Va0sEd8bP4/exec"
-  ) {
-
-    alert(
-      "Inserisci prima l'URL del backend Apps Script."
     );
 
     return;
@@ -711,11 +741,18 @@ async function pubblicaLuogo() {
           },
 
           body:
-            JSON.stringify(
-              luogoGenerato
-            )
+            JSON.stringify(luogoGenerato)
         }
       );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Errore HTTP " + response.status
+      );
+
+    }
 
 
     const risposta =
@@ -726,7 +763,8 @@ async function pubblicaLuogo() {
 
       throw new Error(
         risposta.errore ||
-        "Errore sconosciuto."
+        risposta.message ||
+        "Il backend ha restituito un errore."
       );
 
     }
@@ -734,7 +772,7 @@ async function pubblicaLuogo() {
 
     mostraStato(
       risposta.messaggio ||
-      "Luogo pubblicato correttamente.",
+      "Luogo pubblicato correttamente sulla mappa.",
       "success"
     );
 
@@ -742,18 +780,22 @@ async function pubblicaLuogo() {
     bottone.textContent =
       "Pubblicato ✓";
 
+    bottone.disabled = true;
+
 
   } catch (errore) {
 
+    console.error(errore);
+
     mostraStato(
-      "Errore: " +
+      "Errore durante la pubblicazione: " +
       errore.message,
       "error"
     );
 
 
     bottone.textContent =
-      "Pubblica sulla mappa";
+      "Riprova pubblicazione";
 
     bottone.disabled = false;
 
@@ -763,13 +805,10 @@ async function pubblicaLuogo() {
 
 
 // =====================================================
-// STATO
+// MOSTRA STATO
 // =====================================================
 
-function mostraStato(
-  messaggio,
-  tipo
-) {
+function mostraStato(messaggio, tipo) {
 
   const stato =
     document.getElementById("stato");
