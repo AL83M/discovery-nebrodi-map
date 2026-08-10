@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Discovery Nebrodi – Mappa 3D</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+  // Crea la mappa centrata sui Nebrodi
+  const map = L.map('map').setView([38.02, 14.70], 10);
+
+  // Mappa OpenStreetMap
+  L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }
+  ).addTo(map);
+
+  // Primo punto di prova
+  L.marker([38.015, 14.598])
+    .addTo(map)
+    .bindPopup(`
+      <div style="text-align:center;">
+        <h3>Fotogrammetria 3D</h3>
+        <b>San Fratello</b>
+        <br><br>
+        Primo modello dell'archivio Discovery Nebrodi.
+        <br><br>
+        <button onclick="alert('Qui collegheremo il modello 3D')">
+          Esplora in 3D
+        </button>
+      </div>
+    `);
+</script>
+
+</body>
+</html>
