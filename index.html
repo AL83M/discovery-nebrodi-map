@@ -25,12 +25,11 @@
       height: 100vh;
     }
 
-    /* Overlay del viewer 3D */
     #viewerOverlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.88);
+      background: rgba(0,0,0,0.88);
       z-index: 9999;
       align-items: center;
       justify-content: center;
@@ -67,16 +66,11 @@
       cursor: pointer;
     }
 
-    #closeViewer:hover {
-      background: rgba(0,0,0,0.95);
-    }
-
     .open3d {
       display: inline-block;
       padding: 10px 15px;
       background: #222;
       color: white;
-      text-decoration: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
@@ -89,10 +83,8 @@
 
 <div id="map"></div>
 
-<!-- Finestra 3D -->
 <div id="viewerOverlay">
   <div id="viewerBox">
-
     <button id="closeViewer" onclick="close3D()">×</button>
 
     <iframe
@@ -100,7 +92,6 @@
       allow="autoplay; fullscreen; xr-spatial-tracking"
       allowfullscreen>
     </iframe>
-
   </div>
 </div>
 
@@ -108,8 +99,33 @@
 
 <script>
 
-  // Mappa
-  const map = L.map('map').setView([37.984268, 14.581352], 13);
+  // =====================================================
+  // DATABASE LUOGHI
+  // AGGIUNGI I NUOVI LUOGHI SOLO QUI
+  // =====================================================
+
+  const luoghi = [
+
+    {
+      nome: "Ponte dei Ninfi",
+      lat: 37.984268,
+      lon: 14.581352,
+
+      piattaforma: "sketchfab",
+
+      modello: "f996b426f83c4e30800f1a3b4bad580c",
+
+      descrizione: "Fotogrammetria 3D – Discovery Nebrodi"
+    }
+
+  ];
+
+
+  // =====================================================
+  // MAPPA
+  // =====================================================
+
+  const map = L.map('map').setView([37.984268, 14.581352], 11);
 
   L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -120,61 +136,85 @@
   ).addTo(map);
 
 
-  // Ponte dei Ninfi
-  L.marker([37.984268, 14.581352])
-    .addTo(map)
-    .bindPopup(`
+  // =====================================================
+  // CREAZIONE AUTOMATICA MARKER
+  // =====================================================
+
+  luoghi.forEach(function(luogo) {
+
+    const popup = `
       <div style="text-align:center; min-width:210px;">
 
         <h3 style="margin-bottom:5px;">
-          Ponte dei Ninfi
+          ${luogo.nome}
         </h3>
 
         <p>
-          Fotogrammetria 3D<br>
-          Discovery Nebrodi
+          ${luogo.descrizione || ""}
         </p>
 
         <button
           class="open3d"
-          onclick="open3D('f996b426f83c4e30800f1a3b4bad580c')"
+          onclick="open3D('${luogo.piattaforma}', '${luogo.modello}')"
         >
           Esplora in 3D
         </button>
 
       </div>
-    `);
+    `;
+
+    L.marker([luogo.lat, luogo.lon])
+      .addTo(map)
+      .bindPopup(popup);
+
+  });
 
 
-  // Apertura viewer
-  function open3D(modelId) {
+  // =====================================================
+  // VIEWER
+  // =====================================================
+
+  function open3D(piattaforma, modello) {
 
     const overlay = document.getElementById('viewerOverlay');
     const frame = document.getElementById('viewerFrame');
 
-    frame.src =
-      'https://sketchfab.com/models/' +
-      modelId +
-      '/embed?autostart=1&ui_theme=dark';
+    if (piattaforma === "sketchfab") {
 
-    overlay.style.display = 'flex';
+      frame.src =
+        "https://sketchfab.com/models/" +
+        modello +
+        "/embed?autostart=1&ui_theme=dark";
+
+    }
+
+    else if (piattaforma === "luma") {
+
+      frame.src = modello;
+
+    }
+
+    else {
+
+      alert("Piattaforma non supportata.");
+      return;
+
+    }
+
+    overlay.style.display = "flex";
   }
 
 
-  // Chiusura viewer
   function close3D() {
 
     const overlay = document.getElementById('viewerOverlay');
     const frame = document.getElementById('viewerFrame');
 
-    overlay.style.display = 'none';
-
-    // Ferma il modello quando chiudi
-    frame.src = '';
+    overlay.style.display = "none";
+    frame.src = "";
   }
 
 
-  // Chiudi cliccando sullo sfondo nero
   document.getElementById('viewerOverlay')
     .addEventListener('click', function(event) {
 
