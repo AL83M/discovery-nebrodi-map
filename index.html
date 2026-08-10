@@ -9,7 +9,7 @@
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  >
 
   <style>
     html, body {
@@ -42,7 +42,6 @@
       background: #111;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     }
 
     #viewerFrame {
@@ -60,21 +59,20 @@
       height: 42px;
       border: none;
       border-radius: 50%;
-      background: rgba(0,0,0,0.75);
+      background: #111;
       color: white;
       font-size: 24px;
       cursor: pointer;
     }
 
     .open3d {
-      display: inline-block;
       padding: 10px 15px;
       background: #222;
       color: white;
+      border: 0;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
-      border: none;
     }
   </style>
 </head>
@@ -85,6 +83,7 @@
 
 <div id="viewerOverlay">
   <div id="viewerBox">
+
     <button id="closeViewer" onclick="close3D()">×</button>
 
     <iframe
@@ -92,6 +91,7 @@
       allow="autoplay; fullscreen; xr-spatial-tracking"
       allowfullscreen>
     </iframe>
+
   </div>
 </div>
 
@@ -99,137 +99,100 @@
 
 <script>
 
-  // =====================================================
-  // DATABASE LUOGHI
-  // AGGIUNGI I NUOVI LUOGHI SOLO QUI
-  // =====================================================
+const luoghi = [
+  {
+    nome: "Ponte dei Ninfi",
+    lat: 37.984268,
+    lon: 14.581352,
+    piattaforma: "sketchfab",
+    modello: "f996b426f83c4e30800f1a3b4bad580c",
+    descrizione: "Fotogrammetria 3D - Discovery Nebrodi"
+  }
+];
 
-  const luoghi = [
+const map = L.map("map").setView([37.984268, 14.581352], 11);
 
-    {
-      nome: "Ponte dei Ninfi",
-      lat: 37.984268,
-      lon: 14.581352,
+L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 19,
+    attribution: "&copy; OpenStreetMap contributors"
+  }
+).addTo(map);
 
-      piattaforma: "sketchfab",
+luoghi.forEach(function(luogo) {
 
-      modello: "f996b426f83c4e30800f1a3b4bad580c",
+  const marker = L.marker([luogo.lat, luogo.lon]).addTo(map);
 
-      descrizione: "Fotogrammetria 3D – Discovery Nebrodi"
-    }
-{
-  nome: "Ponte Nicoletta",
-  lat: 38.010992,
-  lon: 14.557262,
-  piattaforma: "sketchfab",
-  modello: "684f69ffdd114762b74741d4b62156a8",
-  descrizione: "Fotogrammetria 3D – Discovery Nebrodi"
-},
-  ];
+  const contenuto = document.createElement("div");
 
+  contenuto.style.textAlign = "center";
+  contenuto.style.minWidth = "210px";
 
-  // =====================================================
-  // MAPPA
-  // =====================================================
+  const titolo = document.createElement("h3");
+  titolo.textContent = luogo.nome;
 
-  const map = L.map('map').setView([37.984268, 14.581352], 11);
+  const descrizione = document.createElement("p");
+  descrizione.textContent = luogo.descrizione;
 
-  L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    {
-      maxZoom: 19,
-      attribution: '&copy; OpenStreetMap contributors'
-    }
-  ).addTo(map);
+  const pulsante = document.createElement("button");
+  pulsante.textContent = "Esplora in 3D";
+  pulsante.className = "open3d";
 
-
-  // =====================================================
-  // CREAZIONE AUTOMATICA MARKER
-  // =====================================================
-
-  luoghi.forEach(function(luogo) {
-
-    const popup = `
-      <div style="text-align:center; min-width:210px;">
-
-        <h3 style="margin-bottom:5px;">
-          ${luogo.nome}
-        </h3>
-
-        <p>
-          ${luogo.descrizione || ""}
-        </p>
-
-        <button
-          class="open3d"
-          onclick="open3D('${luogo.piattaforma}', '${luogo.modello}')"
-        >
-          Esplora in 3D
-        </button>
-
-      </div>
-    `;
-
-    L.marker([luogo.lat, luogo.lon])
-      .addTo(map)
-      .bindPopup(popup);
-
+  pulsante.addEventListener("click", function() {
+    open3D(luogo);
   });
 
+  contenuto.appendChild(titolo);
+  contenuto.appendChild(descrizione);
+  contenuto.appendChild(pulsante);
 
-  // =====================================================
-  // VIEWER
-  // =====================================================
+  marker.bindPopup(contenuto);
 
-  function open3D(piattaforma, modello) {
+});
 
-    const overlay = document.getElementById('viewerOverlay');
-    const frame = document.getElementById('viewerFrame');
+function open3D(luogo) {
 
-    if (piattaforma === "sketchfab") {
+  const overlay = document.getElementById("viewerOverlay");
+  const frame = document.getElementById("viewerFrame");
 
-      frame.src =
-        "https://sketchfab.com/models/" +
-        modello +
-        "/embed?autostart=1&ui_theme=dark";
+  if (luogo.piattaforma === "sketchfab") {
 
-    }
+    frame.src =
+      "https://sketchfab.com/models/" +
+      luogo.modello +
+      "/embed?autostart=1&ui_theme=dark";
 
-    else if (piattaforma === "luma") {
+  } else if (luogo.piattaforma === "luma") {
 
-      frame.src = modello;
+    frame.src = luogo.modello;
 
-    }
+  } else {
 
-    else {
+    alert("Piattaforma non supportata");
+    return;
 
-      alert("Piattaforma non supportata.");
-      return;
-
-    }
-
-    overlay.style.display = "flex";
   }
 
+  overlay.style.display = "flex";
+}
 
-  function close3D() {
+function close3D() {
 
-    const overlay = document.getElementById('viewerOverlay');
-    const frame = document.getElementById('viewerFrame');
+  document.getElementById("viewerOverlay").style.display = "none";
+  document.getElementById("viewerFrame").src = "";
 
-    overlay.style.display = "none";
-    frame.src = "";
-  }
+}
 
+document
+  .getElementById("viewerOverlay")
+  .addEventListener("click", function(event) {
 
-  document.getElementById('viewerOverlay')
-    .addEventListener('click', function(event) {
+    if (event.target === this) {
+      close3D();
+    }
 
-      if (event.target === this) {
-        close3D();
-      }
-
-    });
+  });
 
 </script>
 
