@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Discovery Nebrodi - Gestione Luoghi</title>
+
+<style>
+body {
+  margin: 0;
+  background: #111;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 30px;
+}
+
+h1 {
+  margin-bottom: 5px;
+}
+
+.subtitle {
+  color: #aaa;
+  margin-bottom: 30px;
+}
+
+label {
+  display: block;
+  margin-top: 18px;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #bbb;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: 7px;
+  border: 1px solid #444;
+  background: #1d1d1d;
+  color: white;
+  font-size: 15px;
+}
+
+textarea {
+  min-height: 90px;
+}
+
+button {
+  margin-top: 25px;
+  padding: 13px 20px;
+  border: 0;
+  border-radius: 7px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+#risultato {
+  margin-top: 30px;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  white-space: pre-wrap;
+  font-family: monospace;
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Discovery Nebrodi</h1>
+<div class="subtitle">Aggiungi una nuova fotogrammetria</div>
+
+<label>Nome del luogo</label>
+<input id="nome" placeholder="Ponte dei Ninfi">
+
+<label>Comune</label>
+<input id="localita" placeholder="San Fratello">
+
+<label>Provincia</label>
+<input id="provincia" value="Messina">
+
+<label>Latitudine</label>
+<input id="lat" placeholder="37.984268">
+
+<label>Longitudine</label>
+<input id="lon" placeholder="14.581352">
+
+<label>Categoria</label>
+<select id="categoria">
+  <option>Ponte storico</option>
+  <option>Rudere</option>
+  <option>Castello</option>
+  <option>Chiesa</option>
+  <option>Archeologia</option>
+  <option>Monumento</option>
+  <option>Paesaggio</option>
+  <option>Altro</option>
+</select>
+
+<label>Piattaforma 3D</label>
+<select id="piattaforma">
+  <option value="sketchfab">Sketchfab</option>
+  <option value="luma">Luma AI</option>
+</select>
+
+<label>Link modello</label>
+<input
+  id="link"
+  placeholder="https://sketchfab.com/3d-models/..."
+>
+
+<label>Descrizione</label>
+<textarea id="descrizione">Fotogrammetria 3D - Discovery Nebrodi</textarea>
+
+<button onclick="genera()">Genera luogo</button>
+
+<div id="risultato"></div>
+
+<button
+  id="copia"
+  onclick="copiaJSON()"
+  style="display:none;">
+  Copia
+</button>
+
+</div>
+
+
+<script>
+
+let jsonGenerato = "";
+
+function genera() {
+
+  const nome = document.getElementById("nome").value;
+  const localita = document.getElementById("localita").value;
+  const provincia = document.getElementById("provincia").value;
+
+  const lat = parseFloat(
+    document.getElementById("lat").value
+  );
+
+  const lon = parseFloat(
+    document.getElementById("lon").value
+  );
+
+  const categoria =
+    document.getElementById("categoria").value;
+
+  const piattaforma =
+    document.getElementById("piattaforma").value;
+
+  const link =
+    document.getElementById("link").value.trim();
+
+  const descrizione =
+    document.getElementById("descrizione").value;
+
+
+  if (!nome || isNaN(lat) || isNaN(lon) || !link) {
+
+    alert(
+      "Inserisci almeno nome, coordinate e link del modello."
+    );
+
+    return;
+  }
+
+
+  let modello = link;
+
+
+  // Estrazione automatica ID Sketchfab
+  if (piattaforma === "sketchfab") {
+
+    const match = link.match(
+      /([a-f0-9]{32})(?:\?|$)/
+    );
+
+    if (match) {
+      modello = match[1];
+    }
+
+  }
+
+
+  const luogo = {
+
+    nome: nome,
+    localita: localita,
+    provincia: provincia,
+
+    lat: lat,
+    lon: lon,
+
+    categoria: categoria,
+
+    anno_scansione:
+      new Date().getFullYear(),
+
+    piattaforma: piattaforma,
+
+    modello: modello,
+
+    descrizione: descrizione,
+
+    foto: ""
+
+  };
+
+
+  jsonGenerato =
+    JSON.stringify(luogo, null, 2);
+
+
+  const risultato =
+    document.getElementById("risultato");
+
+  risultato.textContent = jsonGenerato;
+
+  risultato.style.display = "block";
+
+  document.getElementById("copia")
+    .style.display = "inline-block";
+
+}
+
+
+function copiaJSON() {
+
+  navigator.clipboard.writeText(jsonGenerato);
+
+  const bottone =
+    document.getElementById("copia");
+
+  bottone.textContent = "Copiato ✓";
+
+  setTimeout(function() {
+    bottone.textContent = "Copia";
+  }, 1500);
+
+}
+
+</script>
+
+</body>
+</html>
