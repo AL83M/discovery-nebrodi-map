@@ -17,11 +17,70 @@
       padding: 0;
       width: 100%;
       height: 100%;
+      font-family: Arial, sans-serif;
     }
 
     #map {
       width: 100%;
       height: 100vh;
+    }
+
+    /* Overlay del viewer 3D */
+    #viewerOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #viewerBox {
+      position: relative;
+      width: 92%;
+      height: 88%;
+      background: #111;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    #viewerFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    #closeViewer {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10000;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.75);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #closeViewer:hover {
+      background: rgba(0,0,0,0.95);
+    }
+
+    .open3d {
+      display: inline-block;
+      padding: 10px 15px;
+      background: #222;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
     }
   </style>
 </head>
@@ -30,13 +89,28 @@
 
 <div id="map"></div>
 
+<!-- Finestra 3D -->
+<div id="viewerOverlay">
+  <div id="viewerBox">
+
+    <button id="closeViewer" onclick="close3D()">×</button>
+
+    <iframe
+      id="viewerFrame"
+      allow="autoplay; fullscreen; xr-spatial-tracking"
+      allowfullscreen>
+    </iframe>
+
+  </div>
+</div>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // Crea la mappa centrata sui Nebrodi
-  const map = L.map('map').setView([38.02, 14.70], 10);
 
-  // Mappa OpenStreetMap
+  // Mappa
+  const map = L.map('map').setView([37.984268, 14.581352], 13);
+
   L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -45,34 +119,71 @@
     }
   ).addTo(map);
 
-L.marker([37.984268, 14.581352])
-  .addTo(map)
-  .bindPopup(`
-    <div style="text-align:center; min-width:200px;">
-      <h3 style="margin-bottom:5px;">Ponte dei Ninfi</h3>
 
-      <p>
-        Fotogrammetria 3D<br>
-        Discovery Nebrodi
-      </p>
+  // Ponte dei Ninfi
+  L.marker([37.984268, 14.581352])
+    .addTo(map)
+    .bindPopup(`
+      <div style="text-align:center; min-width:210px;">
 
-      <a
-        href="https://skfb.ly/pMEVL"
-        target="_blank"
-        style="
-          display:inline-block;
-          padding:10px 15px;
-          background:#222;
-          color:white;
-          text-decoration:none;
-          border-radius:6px;
-          font-weight:bold;
-        "
-      >
-        Esplora in 3D
-      </a>
-    </div>
-  `);
+        <h3 style="margin-bottom:5px;">
+          Ponte dei Ninfi
+        </h3>
+
+        <p>
+          Fotogrammetria 3D<br>
+          Discovery Nebrodi
+        </p>
+
+        <button
+          class="open3d"
+          onclick="open3D('pMEVL')"
+        >
+          Esplora in 3D
+        </button>
+
+      </div>
+    `);
+
+
+  // Apertura viewer
+  function open3D(modelId) {
+
+    const overlay = document.getElementById('viewerOverlay');
+    const frame = document.getElementById('viewerFrame');
+
+    frame.src =
+      'https://sketchfab.com/models/' +
+      modelId +
+      '/embed?autostart=1&ui_theme=dark';
+
+    overlay.style.display = 'flex';
+  }
+
+
+  // Chiusura viewer
+  function close3D() {
+
+    const overlay = document.getElementById('viewerOverlay');
+    const frame = document.getElementById('viewerFrame');
+
+    overlay.style.display = 'none';
+
+    // Ferma il modello quando chiudi
+    frame.src = '';
+  }
+
+
+  // Chiudi cliccando sullo sfondo nero
+  document.getElementById('viewerOverlay')
+    .addEventListener('click', function(event) {
+
+      if (event.target === this) {
+        close3D();
+      }
+
+    });
+
 </script>
 
 </body>
