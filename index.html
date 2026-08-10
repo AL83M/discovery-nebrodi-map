@@ -301,9 +301,10 @@ L.control.layers(mappeBase, null, {
 luoghi.forEach(function(luogo) {
 
   const marker = L.marker(
-  [luogo.lat, luogo.lon],
-  { icon: icona3D }
-).addTo(map);
+    [luogo.lat, luogo.lon],
+    { icon: icona3D }
+  ).addTo(map);
+
   const contenuto = document.createElement("div");
   contenuto.style.textAlign = "center";
   contenuto.style.minWidth = "210px";
@@ -313,11 +314,20 @@ luoghi.forEach(function(luogo) {
 
   const descrizione = document.createElement("p");
   descrizione.textContent = luogo.descrizione;
-if (luogo.tipo === "panorama360") {
-  pulsante.textContent = "Esplora a 360°";
-} else {
-  pulsante.textContent = "Esplora in 3D";
-}
+
+  const pulsante = document.createElement("button");
+
+  if (luogo.tipo === "panorama360") {
+    pulsante.textContent = "Esplora a 360°";
+  } else {
+    pulsante.textContent = "Esplora in 3D";
+  }
+
+  pulsante.className = "open3d";
+
+  pulsante.addEventListener("click", function() {
+    open3D(luogo);
+  });
 
   contenuto.appendChild(titolo);
   contenuto.appendChild(descrizione);
