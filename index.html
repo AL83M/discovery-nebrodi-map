@@ -134,14 +134,14 @@ fetch("luoghi.json")
     return response.json();
   })
   .then(function(luoghi) {
-
+const bounds = [];
     luoghi.forEach(function(luogo) {
 
       const marker = L.marker(
         [luogo.lat, luogo.lon],
         { icon: icona3D }
       ).addTo(map);
-
+bounds.push([luogo.lat, luogo.lon]);
       const contenuto = document.createElement("div");
 
       contenuto.style.textAlign = "center";
@@ -174,7 +174,12 @@ fetch("luoghi.json")
       marker.bindPopup(contenuto);
 
     });
-
+if (bounds.length > 0) {
+  map.fitBounds(bounds, {
+    padding: [50, 50],
+    maxZoom: 13
+  });
+}
   })
   .catch(function(error) {
     console.error(error);
