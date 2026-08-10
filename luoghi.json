@@ -37,5 +37,18 @@
     "modello": "948afe9a5740461d86efec52ca8db1f0",
     "descrizione": "Fotogrammetria 3D - Discovery Nebrodi",
     "foto": ""
+  },
+  {
+    "nome": "Pizzo San Nicola",
+    "tipo": "panorama360",
+    "regione": "Sicilia",
+    "provincia": "Messina",
+    "localita": "Longi",
+    "lat": 38.019103,
+    "lon": 14.742313,
+    "categoria": "Paesaggio",
+    "anno_scansione": 2026,
+    "foto360": "https://al83m.github.io/discovery-nebrodi-map/dji_fly_20240316_105652_370_1710590460998_pano_optimized.JPG?utm_source=chatgpt.com",
+    "descrizione": "Archivio digitale - replYca"
   }
 ]
