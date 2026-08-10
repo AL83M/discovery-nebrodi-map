@@ -4,76 +4,117 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Discovery Nebrodi - Gestione Luoghi</title>
+<title>replYca - Gestione Luoghi</title>
 
 <style>
-body {
-  margin: 0;
-  background: #111;
-  color: white;
-  font-family: Arial, sans-serif;
-}
+  body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+  }
 
-.container {
-  max-width: 700px;
-  margin: 40px auto;
-  padding: 30px;
-}
+  .container {
+    max-width: 760px;
+    margin: 40px auto;
+    padding: 30px;
+  }
 
-h1 {
-  margin-bottom: 5px;
-}
+  h1 {
+    margin-bottom: 5px;
+    font-size: 36px;
+  }
 
-.subtitle {
-  color: #aaa;
-  margin-bottom: 30px;
-}
+  .subtitle {
+    color: #aaa;
+    margin-bottom: 30px;
+  }
 
-label {
-  display: block;
-  margin-top: 18px;
-  margin-bottom: 6px;
-  font-size: 14px;
-  color: #bbb;
-}
+  label {
+    display: block;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #bbb;
+  }
 
-input,
-select,
-textarea {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  border-radius: 7px;
-  border: 1px solid #444;
-  background: #1d1d1d;
-  color: white;
-  font-size: 15px;
-}
+  input,
+  select,
+  textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border-radius: 7px;
+    border: 1px solid #444;
+    background: #1d1d1d;
+    color: white;
+    font-size: 15px;
+  }
 
-textarea {
-  min-height: 90px;
-}
+  textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
 
-button {
-  margin-top: 25px;
-  padding: 13px 20px;
-  border: 0;
-  border-radius: 7px;
-  background: white;
-  color: black;
-  font-weight: bold;
-  cursor: pointer;
-}
+  .buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 25px;
+  }
 
-#risultato {
-  margin-top: 30px;
-  padding: 20px;
-  background: #1a1a1a;
-  border-radius: 8px;
-  white-space: pre-wrap;
-  font-family: monospace;
-  display: none;
-}
+  button {
+    padding: 13px 20px;
+    border: 0;
+    border-radius: 7px;
+    background: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button.secondary {
+    background: #2a2a2a;
+    color: white;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #risultato {
+    margin-top: 30px;
+    padding: 20px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    white-space: pre-wrap;
+    font-family: monospace;
+    display: none;
+    overflow-x: auto;
+  }
+
+  #stato {
+    margin-top: 20px;
+    padding: 14px;
+    border-radius: 8px;
+    display: none;
+  }
+
+  .success {
+    background: #14351f;
+    color: #bdf5c9;
+  }
+
+  .error {
+    background: #3b1616;
+    color: #ffb7b7;
+  }
+
+  .loading {
+    background: #272727;
+    color: #ddd;
+  }
 </style>
 </head>
 
@@ -81,82 +122,384 @@ button {
 
 <div class="container">
 
-<h1>Discovery Nebrodi</h1>
-<div class="subtitle">Aggiungi una nuova fotogrammetria</div>
+  <h1>replYca</h1>
+  <div class="subtitle">Gestione archivio 3D</div>
 
-<label>Nome del luogo</label>
-<input id="nome" placeholder="Ponte dei Ninfi">
+  <label>Nome del luogo</label>
+  <input id="nome" placeholder="Ponte dei Ninfi">
 
-<label>Comune</label>
-<input id="localita" placeholder="San Fratello">
+  <label>Regione</label>
+  <select id="regione" onchange="aggiornaProvince()">
+    <option value="">Seleziona regione...</option>
+    <option>Abruzzo</option>
+    <option>Basilicata</option>
+    <option>Calabria</option>
+    <option>Campania</option>
+    <option>Emilia-Romagna</option>
+    <option>Friuli-Venezia Giulia</option>
+    <option>Lazio</option>
+    <option>Liguria</option>
+    <option>Lombardia</option>
+    <option>Marche</option>
+    <option>Molise</option>
+    <option>Piemonte</option>
+    <option>Puglia</option>
+    <option>Sardegna</option>
+    <option>Sicilia</option>
+    <option>Toscana</option>
+    <option>Trentino-Alto Adige</option>
+    <option>Umbria</option>
+    <option>Valle d'Aosta</option>
+    <option>Veneto</option>
+  </select>
 
-<label>Provincia</label>
-<input id="provincia" value="Messina">
+  <label>Provincia</label>
+  <select id="provincia">
+    <option value="">Seleziona prima la regione...</option>
+  </select>
 
-<label>Latitudine</label>
-<input id="lat" placeholder="37.984268">
+  <label>Comune</label>
+  <input id="localita" placeholder="San Fratello">
 
-<label>Longitudine</label>
-<input id="lon" placeholder="14.581352">
+  <label>Latitudine</label>
+  <input id="lat" placeholder="37.984268">
 
-<label>Categoria</label>
-<select id="categoria">
-  <option>Ponte storico</option>
-  <option>Rudere</option>
-  <option>Castello</option>
-  <option>Chiesa</option>
-  <option>Archeologia</option>
-  <option>Monumento</option>
-  <option>Paesaggio</option>
-  <option>Altro</option>
-</select>
+  <label>Longitudine</label>
+  <input id="lon" placeholder="14.581352">
 
-<label>Piattaforma 3D</label>
-<select id="piattaforma">
-  <option value="sketchfab">Sketchfab</option>
-  <option value="luma">Luma AI</option>
-</select>
+  <label>Categoria</label>
+  <select id="categoria">
+    <option>Ponte storico</option>
+    <option>Rudere</option>
+    <option>Castello</option>
+    <option>Chiesa</option>
+    <option>Archeologia</option>
+    <option>Monumento</option>
+    <option>Paesaggio</option>
+    <option>Altro</option>
+  </select>
 
-<label>Link modello</label>
-<input
-  id="link"
-  placeholder="https://sketchfab.com/3d-models/..."
->
+  <label>Piattaforma 3D</label>
+  <select id="piattaforma">
+    <option value="sketchfab">Sketchfab</option>
+    <option value="luma">Luma AI</option>
+  </select>
 
-<label>Descrizione</label>
-<textarea id="descrizione">Fotogrammetria 3D - Discovery Nebrodi</textarea>
+  <label>Link modello</label>
+  <input
+    id="link"
+    placeholder="https://sketchfab.com/3d-models/..."
+  >
 
-<button onclick="genera()">Genera luogo</button>
+  <label>Descrizione</label>
+  <textarea id="descrizione">Fotogrammetria 3D - replYca</textarea>
 
-<div id="risultato"></div>
+  <div class="buttons">
 
-<button
-  id="copia"
-  onclick="copiaJSON()"
-  style="display:none;">
-  Copia
-</button>
+    <button onclick="genera()">
+      Genera luogo
+    </button>
+
+    <button
+      id="copia"
+      class="secondary"
+      onclick="copiaJSON()"
+      style="display:none;"
+    >
+      Copia JSON
+    </button>
+
+    <button
+      id="pubblica"
+      onclick="pubblicaLuogo()"
+      style="display:none;"
+    >
+      Pubblica sulla mappa
+    </button>
+
+  </div>
+
+  <div id="risultato"></div>
+  <div id="stato"></div>
 
 </div>
 
-
 <script>
 
+// =====================================================
+// BACKEND
+// =====================================================
+
+const BACKEND_URL =
+  "INCOLLA_QUI_URL_APPS_SCRIPT";
+
+
+// =====================================================
+// PROVINCE PER REGIONE
+// =====================================================
+
+const provincePerRegione = {
+
+  "Abruzzo": [
+    "Chieti",
+    "L'Aquila",
+    "Pescara",
+    "Teramo"
+  ],
+
+  "Basilicata": [
+    "Matera",
+    "Potenza"
+  ],
+
+  "Calabria": [
+    "Catanzaro",
+    "Cosenza",
+    "Crotone",
+    "Reggio Calabria",
+    "Vibo Valentia"
+  ],
+
+  "Campania": [
+    "Avellino",
+    "Benevento",
+    "Caserta",
+    "Napoli",
+    "Salerno"
+  ],
+
+  "Emilia-Romagna": [
+    "Bologna",
+    "Ferrara",
+    "Forlì-Cesena",
+    "Modena",
+    "Parma",
+    "Piacenza",
+    "Ravenna",
+    "Reggio Emilia",
+    "Rimini"
+  ],
+
+  "Friuli-Venezia Giulia": [
+    "Gorizia",
+    "Pordenone",
+    "Trieste",
+    "Udine"
+  ],
+
+  "Lazio": [
+    "Frosinone",
+    "Latina",
+    "Rieti",
+    "Roma",
+    "Viterbo"
+  ],
+
+  "Liguria": [
+    "Genova",
+    "Imperia",
+    "La Spezia",
+    "Savona"
+  ],
+
+  "Lombardia": [
+    "Bergamo",
+    "Brescia",
+    "Como",
+    "Cremona",
+    "Lecco",
+    "Lodi",
+    "Mantova",
+    "Milano",
+    "Monza e Brianza",
+    "Pavia",
+    "Sondrio",
+    "Varese"
+  ],
+
+  "Marche": [
+    "Ancona",
+    "Ascoli Piceno",
+    "Fermo",
+    "Macerata",
+    "Pesaro e Urbino"
+  ],
+
+  "Molise": [
+    "Campobasso",
+    "Isernia"
+  ],
+
+  "Piemonte": [
+    "Alessandria",
+    "Asti",
+    "Biella",
+    "Cuneo",
+    "Novara",
+    "Torino",
+    "Verbano-Cusio-Ossola",
+    "Vercelli"
+  ],
+
+  "Puglia": [
+    "Bari",
+    "Barletta-Andria-Trani",
+    "Brindisi",
+    "Foggia",
+    "Lecce",
+    "Taranto"
+  ],
+
+  "Sardegna": [
+    "Cagliari",
+    "Nuoro",
+    "Oristano",
+    "Sassari",
+    "Sud Sardegna"
+  ],
+
+  "Sicilia": [
+    "Agrigento",
+    "Caltanissetta",
+    "Catania",
+    "Enna",
+    "Messina",
+    "Palermo",
+    "Ragusa",
+    "Siracusa",
+    "Trapani"
+  ],
+
+  "Toscana": [
+    "Arezzo",
+    "Firenze",
+    "Grosseto",
+    "Livorno",
+    "Lucca",
+    "Massa-Carrara",
+    "Pisa",
+    "Pistoia",
+    "Prato",
+    "Siena"
+  ],
+
+  "Trentino-Alto Adige": [
+    "Bolzano",
+    "Trento"
+  ],
+
+  "Umbria": [
+    "Perugia",
+    "Terni"
+  ],
+
+  "Valle d'Aosta": [
+    "Aosta"
+  ],
+
+  "Veneto": [
+    "Belluno",
+    "Padova",
+    "Rovigo",
+    "Treviso",
+    "Venezia",
+    "Verona",
+    "Vicenza"
+  ]
+
+};
+
+
+// =====================================================
+// AGGIORNA PROVINCE
+// =====================================================
+
+function aggiornaProvince() {
+
+  const regione =
+    document.getElementById("regione").value;
+
+  const selectProvincia =
+    document.getElementById("provincia");
+
+  selectProvincia.innerHTML = "";
+
+  if (!regione) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = "";
+    option.textContent =
+      "Seleziona prima la regione...";
+
+    selectProvincia.appendChild(option);
+
+    return;
+  }
+
+  const province =
+    provincePerRegione[regione] || [];
+
+  const placeholder =
+    document.createElement("option");
+
+  placeholder.value = "";
+  placeholder.textContent =
+    "Seleziona provincia...";
+
+  selectProvincia.appendChild(placeholder);
+
+  province.forEach(function(provincia) {
+
+    const option =
+      document.createElement("option");
+
+    option.value = provincia;
+    option.textContent = provincia;
+
+    selectProvincia.appendChild(option);
+
+  });
+
+}
+
+
+// =====================================================
+// VARIABILI
+// =====================================================
+
+let luogoGenerato = null;
 let jsonGenerato = "";
+
+
+// =====================================================
+// GENERA LUOGO
+// =====================================================
 
 function genera() {
 
-  const nome = document.getElementById("nome").value;
-  const localita = document.getElementById("localita").value;
-  const provincia = document.getElementById("provincia").value;
+  const nome =
+    document.getElementById("nome").value.trim();
 
-  const lat = parseFloat(
-    document.getElementById("lat").value
-  );
+  const regione =
+    document.getElementById("regione").value;
 
-  const lon = parseFloat(
-    document.getElementById("lon").value
-  );
+  const provincia =
+    document.getElementById("provincia").value;
+
+  const localita =
+    document.getElementById("localita").value.trim();
+
+  const lat =
+    parseFloat(
+      document.getElementById("lat").value
+    );
+
+  const lon =
+    parseFloat(
+      document.getElementById("lon").value
+    );
 
   const categoria =
     document.getElementById("categoria").value;
@@ -168,13 +511,21 @@ function genera() {
     document.getElementById("link").value.trim();
 
   const descrizione =
-    document.getElementById("descrizione").value;
+    document.getElementById("descrizione").value.trim();
 
 
-  if (!nome || isNaN(lat) || isNaN(lon) || !link) {
+  if (
+    !nome ||
+    !regione ||
+    !provincia ||
+    !localita ||
+    isNaN(lat) ||
+    isNaN(lon) ||
+    !link
+  ) {
 
     alert(
-      "Inserisci almeno nome, coordinate e link del modello."
+      "Compila nome, regione, provincia, comune, coordinate e link."
     );
 
     return;
@@ -184,27 +535,43 @@ function genera() {
   let modello = link;
 
 
-  // Estrazione automatica ID Sketchfab
+  // ==========================================
+  // ID SKETCHFAB AUTOMATICO
+  // ==========================================
+
   if (piattaforma === "sketchfab") {
 
-    const match = link.match(
-      /([a-f0-9]{32})(?:\?|$)/
-    );
+    const match =
+      link.match(/([a-f0-9]{32})(?:\?|$)/i);
 
     if (match) {
+
       modello = match[1];
+
+    } else {
+
+      alert(
+        "Non riesco a trovare l'ID Sketchfab nel link."
+      );
+
+      return;
     }
 
   }
 
 
-  const luogo = {
+  luogoGenerato = {
 
     nome: nome,
-    localita: localita,
+
+    regione: regione,
+
     provincia: provincia,
 
+    localita: localita,
+
     lat: lat,
+
     lon: lon,
 
     categoria: categoria,
@@ -224,34 +591,197 @@ function genera() {
 
 
   jsonGenerato =
-    JSON.stringify(luogo, null, 2);
+    JSON.stringify(
+      luogoGenerato,
+      null,
+      2
+    );
 
 
   const risultato =
     document.getElementById("risultato");
 
-  risultato.textContent = jsonGenerato;
+  risultato.textContent =
+    jsonGenerato;
 
-  risultato.style.display = "block";
+  risultato.style.display =
+    "block";
+
 
   document.getElementById("copia")
     .style.display = "inline-block";
 
+  document.getElementById("pubblica")
+    .style.display = "inline-block";
+
+
+  mostraStato(
+    "Luogo generato correttamente.",
+    "success"
+  );
+
 }
 
 
+// =====================================================
+// COPIA JSON
+// =====================================================
+
 function copiaJSON() {
 
-  navigator.clipboard.writeText(jsonGenerato);
+  if (!jsonGenerato) {
+    return;
+  }
+
+  navigator.clipboard.writeText(
+    jsonGenerato
+  );
 
   const bottone =
     document.getElementById("copia");
 
-  bottone.textContent = "Copiato ✓";
+  bottone.textContent =
+    "Copiato ✓";
 
   setTimeout(function() {
-    bottone.textContent = "Copia";
+
+    bottone.textContent =
+      "Copia JSON";
+
   }, 1500);
+
+}
+
+
+// =====================================================
+// PUBBLICA
+// =====================================================
+
+async function pubblicaLuogo() {
+
+  if (!luogoGenerato) {
+
+    alert(
+      "Prima premi Genera luogo."
+    );
+
+    return;
+  }
+
+
+  if (
+    BACKEND_URL ===
+    "https://script.google.com/macros/s/AKfycbz1kw3A7PgLTbOJWyVLUfwn2_bwkeepfdRkeYsxBktNuszUq_hTjie4p5Va0sEd8bP4/exec"
+  ) {
+
+    alert(
+      "Inserisci prima l'URL del backend Apps Script."
+    );
+
+    return;
+  }
+
+
+  const bottone =
+    document.getElementById("pubblica");
+
+  bottone.disabled = true;
+
+  bottone.textContent =
+    "Pubblicazione...";
+
+
+  mostraStato(
+    "Invio dati a replYca Backend...",
+    "loading"
+  );
+
+
+  try {
+
+    const response =
+      await fetch(
+        BACKEND_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:
+            JSON.stringify(
+              luogoGenerato
+            )
+        }
+      );
+
+
+    const risposta =
+      await response.json();
+
+
+    if (!risposta.success) {
+
+      throw new Error(
+        risposta.errore ||
+        "Errore sconosciuto."
+      );
+
+    }
+
+
+    mostraStato(
+      risposta.messaggio ||
+      "Luogo pubblicato correttamente.",
+      "success"
+    );
+
+
+    bottone.textContent =
+      "Pubblicato ✓";
+
+
+  } catch (errore) {
+
+    mostraStato(
+      "Errore: " +
+      errore.message,
+      "error"
+    );
+
+
+    bottone.textContent =
+      "Pubblica sulla mappa";
+
+    bottone.disabled = false;
+
+  }
+
+}
+
+
+// =====================================================
+// STATO
+// =====================================================
+
+function mostraStato(
+  messaggio,
+  tipo
+) {
+
+  const stato =
+    document.getElementById("stato");
+
+  stato.textContent =
+    messaggio;
+
+  stato.className =
+    tipo;
+
+  stato.style.display =
+    "block";
 
 }
 
