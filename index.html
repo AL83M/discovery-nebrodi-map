@@ -74,7 +74,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
   </style>
 </head>
 
@@ -100,6 +99,10 @@
 
 <script>
 
+// ===============================
+// DATABASE LUOGHI
+// ===============================
+
 const luoghi = [
   {
     nome: "Ponte dei Ninfi",
@@ -111,13 +114,13 @@ const luoghi = [
   }
 ];
 
+// ===============================
+// MAPPA
+// ===============================
+
 const map = L.map("map").setView([37.984268, 14.581352], 11);
 
-// ===============================
-// TIPI DI MAPPA
-// ===============================
-
-// OpenStreetMap
+// Standard
 const mappaStandard = L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
@@ -126,15 +129,14 @@ const mappaStandard = L.tileLayer(
   }
 );
 
-// Mappa topografica
+// Topografica
 const mappaTopo = L.tileLayer(
   "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 17,
-    attribution: "Map data: &copy; OpenStreetMap contributors | OpenTopoMap"
+    attribution: "&copy; OpenStreetMap contributors | OpenTopoMap"
   }
 );
-
 
 // Satellite
 const mappaSatellite = L.tileLayer(
@@ -144,23 +146,12 @@ const mappaSatellite = L.tileLayer(
     attribution: "Tiles &copy; Esri"
   }
 );
-  const mappaTerrain = L.tileLayer(
-  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 17,
-    attribution: "&copy; OpenStreetMap contributors | OpenTopoMap"
-  }
-);
-);
 
+// Mappa iniziale
+mappaTopo.addTo(map);
 
-// La mappa che appare all'apertura
-mappaTerrain.addTo(map);
-
-
-// Selettore mappe
+// Selettore
 const mappeBase = {
-  "⛰️ Terrain": mappaTerrain,
   "🗺️ Topografica": mappaTopo,
   "🛰️ Satellite": mappaSatellite,
   "📍 Standard": mappaStandard
@@ -170,12 +161,15 @@ L.control.layers(mappeBase, null, {
   position: "topright"
 }).addTo(map);
 
+// ===============================
+// MARKER
+// ===============================
+
 luoghi.forEach(function(luogo) {
 
   const marker = L.marker([luogo.lat, luogo.lon]).addTo(map);
 
   const contenuto = document.createElement("div");
-
   contenuto.style.textAlign = "center";
   contenuto.style.minWidth = "210px";
 
@@ -201,47 +195,45 @@ luoghi.forEach(function(luogo) {
 
 });
 
+// ===============================
+// VIEWER
+// ===============================
+
 function open3D(luogo) {
 
   const overlay = document.getElementById("viewerOverlay");
   const frame = document.getElementById("viewerFrame");
 
   if (luogo.piattaforma === "sketchfab") {
-
     frame.src =
       "https://sketchfab.com/models/" +
       luogo.modello +
       "/embed?autostart=1&ui_theme=dark";
+  }
 
-  } else if (luogo.piattaforma === "luma") {
-
+  else if (luogo.piattaforma === "luma") {
     frame.src = luogo.modello;
+  }
 
-  } else {
-
+  else {
     alert("Piattaforma non supportata");
     return;
-
   }
 
   overlay.style.display = "flex";
 }
 
 function close3D() {
-
   document.getElementById("viewerOverlay").style.display = "none";
   document.getElementById("viewerFrame").src = "";
-
 }
 
 document
   .getElementById("viewerOverlay")
   .addEventListener("click", function(event) {
-
     if (event.target === this) {
       close3D();
     }
-
   });
 
 </script>
