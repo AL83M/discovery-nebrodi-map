@@ -112,13 +112,52 @@ const luoghi = [
 
 const map = L.map("map").setView([37.984268, 14.581352], 11);
 
-L.tileLayer(
+// ===============================
+// TIPI DI MAPPA
+// ===============================
+
+// OpenStreetMap
+const mappaStandard = L.tileLayer(
   "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
   {
     maxZoom: 19,
     attribution: "&copy; OpenStreetMap contributors"
   }
-).addTo(map);
+);
+
+// Mappa topografica
+const mappaTopo = L.tileLayer(
+  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 17,
+    attribution: "Map data: &copy; OpenStreetMap contributors | OpenTopoMap"
+  }
+);
+
+// Satellite
+const mappaSatellite = L.tileLayer(
+  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+  {
+    maxZoom: 19,
+    attribution: "Tiles &copy; Esri"
+  }
+);
+
+
+// La mappa che appare all'apertura
+mappaTopo.addTo(map);
+
+
+// Selettore mappe
+const mappeBase = {
+  "🗺️ Topografica": mappaTopo,
+  "🛰️ Satellite": mappaSatellite,
+  "📍 Standard": mappaStandard
+};
+
+L.control.layers(mappeBase, null, {
+  position: "topright"
+}).addTo(map);
 
 luoghi.forEach(function(luogo) {
 
