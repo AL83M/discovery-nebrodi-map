@@ -45,21 +45,34 @@
     }
   ).addTo(map);
 
-  // Primo punto di prova
-  L.marker([38.015, 14.598])
-    .addTo(map)
-    .bindPopup(`
-      <div style="text-align:center;">
-        <h3>Fotogrammetria 3D</h3>
-        <b>San Fratello</b>
-        <br><br>
-        Primo modello dell'archivio Discovery Nebrodi.
-        <br><br>
-        <button onclick="alert('Qui collegheremo il modello 3D')">
-          Esplora in 3D
-        </button>
-      </div>
-    `);
+L.marker([37.984268, 14.581352])
+  .addTo(map)
+  .bindPopup(`
+    <div style="text-align:center; min-width:200px;">
+      <h3 style="margin-bottom:5px;">Ponte dei Ninfi</h3>
+
+      <p>
+        Fotogrammetria 3D<br>
+        Discovery Nebrodi
+      </p>
+
+      <a
+        href="https://skfb.ly/pMEVL"
+        target="_blank"
+        style="
+          display:inline-block;
+          padding:10px 15px;
+          background:#222;
+          color:white;
+          text-decoration:none;
+          border-radius:6px;
+          font-weight:bold;
+        "
+      >
+        Esplora in 3D
+      </a>
+    </div>
+  `);
 </script>
 
 </body>
