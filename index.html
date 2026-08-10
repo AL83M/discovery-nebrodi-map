@@ -74,14 +74,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    /* Effetto carta geografica storica */
-.storica-pane .leaflet-tile {
-  filter:
-    sepia(60%)
-    saturate(65%)
-    brightness(108%)
-    contrast(92%);
-}
+
   </style>
 </head>
 
@@ -141,21 +134,7 @@ const mappaTopo = L.tileLayer(
     attribution: "Map data: &copy; OpenStreetMap contributors | OpenTopoMap"
   }
 );
-  // ===============================
-// MAPPA STORICA
-// ===============================
 
-map.createPane("storicaPane");
-map.getPane("storicaPane").classList.add("storica-pane");
-
-const mappaStorica = L.tileLayer(
-  "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
-  {
-    maxZoom: 17,
-    pane: "storicaPane",
-    attribution: "Map data: &copy; OpenStreetMap contributors | OpenTopoMap"
-  }
-);
 
 // Satellite
 const mappaSatellite = L.tileLayer(
@@ -165,15 +144,23 @@ const mappaSatellite = L.tileLayer(
     attribution: "Tiles &copy; Esri"
   }
 );
+  const mappaTerrain = L.tileLayer(
+  "https://tiles.stadiamaps.com/tiles/stamen_terrain/{z}/{x}/{y}{r}.png",
+  {
+    maxZoom: 20,
+    attribution:
+      '&copy; Stadia Maps &copy; Stamen Design &copy; OpenMapTiles &copy; OpenStreetMap contributors'
+  }
+);
 
 
 // La mappa che appare all'apertura
-mappaTopo.addTo(map);
+"⛰️ Terrain": mappaTerrain,
 
 
 // Selettore mappe
 const mappeBase = {
-  "🏛️ Storica": mappaStorica,
+  "⛰️ Terrain": mappaTerrain,
   "🗺️ Topografica": mappaTopo,
   "🛰️ Satellite": mappaSatellite,
   "📍 Standard": mappaStandard
