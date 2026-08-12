@@ -44,17 +44,20 @@
       pointer-events: auto;
       text-decoration: none;
       border-radius: 14px;
-      padding: 10px 14px;
+      height: 48px;
+      padding: 0 16px;
       white-space: nowrap;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     #brand img {
-      width:120px;
-      height:auto;
-      display:block;
+      width: 108px;
+      max-height: 28px;
+      height: auto;
+      object-fit: contain;
+      display: block;
     }
 
     #searchWrap {
@@ -62,6 +65,7 @@
       flex: 1;
       min-width: 0;
       border-radius: 14px;
+      height: 48px;
       display: flex;
       align-items: center;
       padding: 0 12px;
@@ -80,16 +84,6 @@
 
     #searchInput::placeholder {
       color: rgba(255,255,255,0.56);
-    }
-
-    #addPlace {
-      pointer-events: auto;
-      color: white;
-      text-decoration: none;
-      border-radius: 14px;
-      padding: 13px 16px;
-      white-space: nowrap;
-      font-weight: 700;
     }
 
     #searchResults {
@@ -224,23 +218,14 @@
         width: calc(100% - 20px);
         gap: 8px;
       }
-
       #brand {
-        padding: 10px 11px;
+        height: 46px;
+        padding: 0 12px;
       }
 
       #brand img {
-        width:96px;
-      }
-
-      #addPlace {
-        padding: 12px 13px;
-        font-size: 0;
-      }
-
-      #addPlace::after {
-        content: "+";
-        font-size: 22px;
+        width: 96px;
+        max-height: 25px;
       }
 
       #searchInput {
@@ -302,9 +287,7 @@
         aria-label="Cerca un luogo"
       >
     </div>
-
-    <a id="addPlace" class="glass" href="admin.html">+ Aggiungi luogo</a>
-  </div>
+</div>
 
   <div id="searchResults" class="glass"></div>
   <div id="map"></div>
