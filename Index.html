@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>replYca — Photogrammetry Map</title>
+
+  <meta
+    name="description"
+    content="replYca è una mappa dedicata alla scoperta, documentazione e conservazione digitale dei luoghi attraverso la fotogrammetria."
+  />
+
+  <style>
+    :root {
+      --bg: #061724;
+      --bg-light: #0b2639;
+      --blue: #14a9ff;
+      --blue-2: #0088df;
+      --white: #ffffff;
+      --text: #eaf6ff;
+      --muted: #a9c0cf;
+      --dark-text: #0b1e2c;
+      --card: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* =========================
+       NAVBAR
+    ========================== */
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+
+      width: 100%;
+      height: 78px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding: 0 6%;
+
+      z-index: 1000;
+
+      background: rgba(4, 20, 31, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .logo {
+      font-size: 30px;
+      font-weight: 600;
+      letter-spacing: -2px;
+    }
+
+    .logo .y {
+      color: var(--blue);
+      font-size: 38px;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      font-size: 15px;
+    }
+
+    .nav-links a {
+      color: rgba(255,255,255,0.82);
+      transition: 0.25s;
+    }
+
+    .nav-links a:hover {
+      color: var(--blue);
+    }
+
+    .nav-button {
+      padding: 12px 18px;
+      border-radius: 50px;
+
+      background: linear-gradient(
+        135deg,
+        var(--blue),
+        var(--blue-2)
+      );
+
+      color: white !important;
+      font-weight: 600;
+
+      box-shadow: 0 0 30px rgba(20,169,255,0.28);
+    }
+
+    /* =========================
+       HERO
+    ========================== */
+
+    .hero {
+      min-height: 100vh;
+
+      display: flex;
+      align-items: center;
+
+      position: relative;
+
+      padding: 150px 7% 90px;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 70% 40%,
+          rgba(0,157,255,0.2),
+          transparent 30%
+        ),
+        linear-gradient(
+          120deg,
+          #04121d 0%,
+          #07273c 55%,
+          #0a3850 100%
+        );
+    }
+
+    .hero::before {
+      content: "";
+
+      position: absolute;
+      inset: 0;
+
+      background-image:
+        linear-gradient(
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        ),
+        linear-gradient(
+          90deg,
+          rgba(255,255,255,0.025) 1px,
+          transparent 1px
+        );
+
+      background-size: 60px 60px;
+
+      mask-image:
+        linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.75),
+          transparent
+        );
+
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .hero-brand {
+      margin-bottom: 30px;
+    }
+
+    .hero-logo {
+      font-size: clamp(58px, 8vw, 110px);
+      font-weight: 500;
+      letter-spacing: -6px;
+      line-height: 0.95;
+    }
+
+    .hero-logo .y {
+      color: var(--blue);
+      font-size: 1.18em;
+      font-weight: 700;
+
+      text-shadow:
+        0 0 35px rgba(20,169,255,0.45);
+    }
+
+    .subtitle {
+      margin-top: 18px;
+
+      display: flex;
+      align-items: center;
+      gap: 14px;
+
+      font-size: 14px;
+      letter-spacing: 7px;
+      font-weight: 500;
+
+      color: rgba(255,255,255,0.83);
+    }
+
+    .subtitle::before,
+    .subtitle::after {
+      content: "";
+      height: 2px;
+      width: 42px;
+
+      background: var(--blue);
+    }
+
+    .tagline {
+      margin-top: 30px;
+
+      font-size: 15px;
+      letter-spacing: 6px;
+
+      color: var(--muted);
+    }
+
+    .tagline span {
+      color: var(--blue);
+      margin: 0 10px;
+    }
+
+    .hero h1 {
+      margin-top: 50px;
+
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.05;
+
+      max-width: 650px;
+    }
+
+    .hero-description {
+      margin-top: 24px;
+
+      font-size: 19px;
+      line-height: 1.65;
+
+      color: var(--muted);
+
+      max-width: 600px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 18px;
+
+      margin-top: 38px;
+
+      flex-wrap: wrap;
+    }
+
+    .button {
+      min-width: 205px;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+
+      padding: 16px 24px;
+
+      border-radius: 50px;
+
+      font-size: 16px;
+      font-weight: 600;
+
+      transition: 0.25s;
+    }
+
+    .button-primary {
+      background: linear-gradient(
+        135deg,
+        var(--blue),
+        var(--blue-2)
+      );
+
+      box-shadow:
+        0 15px 45px rgba(20,169,255,0.28);
+    }
+
+    .button-primary:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 20px 55px rgba(20,169,255,0.42);
+    }
+
+    .button-secondary {
+      border: 1px solid rgba(255,255,255,0.65);
+
+      background: rgba(255,255,255,0.03);
+    }
+
+    .button-secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    /* =========================
+       DECORAZIONE HERO
+    ========================== */
+
+    .hero-visual {
+      position: absolute;
+
+      right: -70px;
+      bottom: -100px;
+
+      width: 700px;
+      height: 700px;
+
+      border-radius: 50%;
+
+      border: 1px solid rgba(20,169,255,0.15);
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(20,169,255,0.23),
+          rgba(20,169,255,0.04) 45%,
+          transparent 70%
+        );
+    }
+
+    .hero-visual::before {
+      content: "";
+
+      position: absolute;
+
+      width: 450px;
+      height: 450px;
+
+      left: 120px;
+      top: 100px;
+
+      border: 1px solid rgba(20,169,255,0.25);
+      border-radius: 50%;
+    }
+
+    /* =========================
+       FEATURES
+    ========================== */
+
+    .features {
+      background: #f4f8fb;
+      color: var(--dark-text);
+
+      padding: 100px 7%;
+    }
+
+    .section-heading {
+      text-align: center;
+
+      max-width: 800px;
+
+      margin: 0 auto 60px;
+    }
+
+    .section-heading h2 {
+      font-size: 42px;
+    }
+
+    .section-heading p {
+      margin-top: 15px;
+
+      color: #587083;
+      font-size: 18px;
+      line-height: 1.6;
+    }
+
+    .feature-grid {
+      max-width: 1280px;
+
+      margin: auto;
+
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+
+    .card {
+      background: white;
+
+      border-radius: 22px;
+
+      padding: 30px;
+
+      min-height: 270px;
+
+      box-shadow:
+        0 12px 35px rgba(17,42,59,0.08);
+
+      transition: 0.3s;
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .icon {
+      width: 55px;
+      height: 55px;
+
+      display: grid;
+      place-items: center;
+
+      border-radius: 15px;
+
+      background: #e9f7ff;
+
+      color: var(--blue);
+
+      font-size: 28px;
+
+      margin-bottom: 26px;
+    }
+
+    .card h3 {
+      font-size: 23px;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      line-height: 1.65;
+      color: #607686;
+    }
+
+    /* =========================
+       CTA
+    ========================== */
+
+    .cta {
+      min-height: 500px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      text-align: center;
+
+      padding: 90px 20px;
+
+      background:
+        radial-gradient(
+          circle at center,
+          rgba(20,169,255,0.18),
+          transparent 45%
+        ),
+        #061724;
+    }
+
+    .cta-content {
+      max-width: 850px;
+    }
+
+    .cta h2 {
+      font-size: clamp(40px, 6vw, 66px);
+    }
+
+    .cta h2 span {
+      color: var(--blue);
+    }
+
+    .cta p {
+      margin: 22px auto 35px;
+
+      font-size: 19px;
+      line-height: 1.6;
+
+      color: var(--muted);
+
+      max-width: 650px;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer {
+      padding: 40px 7%;
+
+      background: #030e16;
+
+      border-top: 1px solid rgba(255,255,255,0.08);
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+
+    .footer-logo {
+      font-size: 25px;
+      font-weight: 600;
+    }
+
+    .footer-logo .y {
+      color: var(--blue);
+      font-size: 31px;
+    }
+
+    .footer-tagline {
+      color: #6f8a9c;
+
+      letter-spacing: 4px;
+      font-size: 11px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================== */
+
+    @media (max-width: 950px) {
+
+      .nav-links a:not(.nav-button) {
+        display: none;
+      }
+
+      .feature-grid {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .hero-visual {
+        opacity: 0.4;
+      }
+    }
+
+    @media (max-width: 650px) {
+
+      .navbar {
+        height: 68px;
+        padding: 0 20px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      .logo .y {
+        font-size: 30px;
+      }
+
+      .nav-button {
+        padding: 10px 14px;
+        font-size: 13px;
+      }
+
+      .hero {
+        padding:
+          125px
+          24px
+          80px;
+      }
+
+      .hero-logo {
+        letter-spacing: -4px;
+      }
+
+      .subtitle {
+        letter-spacing: 3px;
+        font-size: 11px;
+      }
+
+      .subtitle::before,
+      .subtitle::after {
+        width: 20px;
+      }
+
+      .tagline {
+        letter-spacing: 3px;
+        font-size: 11px;
+      }
+
+      .hero-description {
+        font-size: 17px;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+      }
+
+      .features {
+        padding:
+          75px
+          20px;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-heading h2 {
+        font-size: 34px;
+      }
+
+      footer {
+        text-align: center;
+        justify-content: center;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar">
+
+    <a href="#" class="logo">
+      repl<span class="y">Y</span>ca
+    </a>
+
+    <div class="nav-links">
+      <a href="#mappa">Mappa</a>
+      <a href="#progetto">Il progetto</a>
+      <a href="#contribuisci">Contribuisci</a>
+
+      <a href="#aggiungi" class="nav-button">
+        + Aggiungi un luogo
+      </a>
+    </div>
+
+  </nav>
+
+
+  <!-- HERO -->
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <div class="hero-brand">
+
+        <div class="hero-logo">
+          repl<span class="y">Y</span>ca
+        </div>
+
+        <div class="subtitle">
+          PHOTOGRAMMETRY MAP
+        </div>
+
+        <div class="tagline">
+          EXPLORE
+          <span>•</span>
+          CAPTURE
+          <span>•</span>
+          PRESERVE
+        </div>
+
+      </div>
+
+
+      <h1>
+        Una mappa dei luoghi,<br>
+        ricostruiti in 3D.
+      </h1>
+
+
+      <p class="hero-description">
+        Esplora territori, scopri fotogrammetrie
+        e osserva luoghi reali attraverso le loro
+        ricostruzioni digitali.
+      </p>
+
+
+      <div class="hero-buttons">
+
+        <a href="#mappa" class="button button-primary">
+          🗺️ Esplora la mappa →
+        </a>
+
+        <a href="#aggiungi" class="button button-secondary">
+          ＋ Aggiungi un luogo
+        </a>
+
+      </div>
+
+    </div>
+
+
+    <div class="hero-visual"></div>
+
+  </section>
+
+
+  <!-- FEATURES -->
+  <section class="features" id="progetto">
+
+    <div class="section-heading">
+
+      <h2>
+        Un progetto per tutti
+      </h2>
+
+      <p>
+        Droni, fotocamere e passione per il territorio.
+        replYca raccoglie fotogrammetrie e modelli 3D
+        all'interno di una mappa aperta alla scoperta.
+      </p>
+
+    </div>
+
+
+    <div class="feature-grid">
+
+      <div class="card">
+
+        <div class="icon">
+          📍
+        </div>
+
+        <h3>
+          Esplora
+        </h3>
+
+        <p>
+          Naviga sulla mappa e scopri monumenti
