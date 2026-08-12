@@ -18,12 +18,14 @@
     "provincia": "Messina",
     "lat": 38.011028,
     "lon": 14.557289,
-    "categoria": "Ponte storico",
+    "categoria": "Ponte",
     "anno_scansione": 2026,
     "piattaforma": "sketchfab",
     "modello": "684f69ffdd114762b74741d4b62156a8",
     "descrizione": "Fotogrammetria 3D - Discovery Nebrodi",
-    "foto": ""
+    "foto": "",
+    "regione": "",
+    "foto360": "pontedeininfi360.JPG"
   },
   {
     "nome": "Torre della Strega",
