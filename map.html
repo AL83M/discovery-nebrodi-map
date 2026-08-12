@@ -176,10 +176,27 @@
       cursor: pointer;
     }
 
+    .content-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
     .open3d {
       width: 100%;
       padding: 12px 14px;
       background: #222;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .open360 {
+      width: 100%;
+      padding: 12px 14px;
+      background: #0f6fae;
       color: white;
       border: 0;
       border-radius: 8px;
@@ -400,19 +417,52 @@
           const descrizione = document.createElement("p");
           descrizione.textContent = luogo.descrizione || "";
 
-          const pulsante = document.createElement("button");
-          pulsante.textContent =
-            luogo.tipo === "panorama360" ? "Esplora a 360°" : "Esplora in 3D";
-          pulsante.className = "open3d";
+          const azioni = document.createElement("div");
+          azioni.className = "content-actions";
 
-          pulsante.addEventListener("click", function() {
-            open3D(luogo);
-          });
+          const ha3D =
+            (luogo.piattaforma === "sketchfab" && luogo.modello) ||
+            (luogo.piattaforma === "luma" && luogo.modello);
+
+          const ha360 = Boolean(luogo.foto360 || luogo.immagine);
+
+          if (ha3D) {
+            const pulsante3D = document.createElement("button");
+            pulsante3D.textContent = "⬡ Esplora in 3D";
+            pulsante3D.className = "open3d";
+
+            pulsante3D.addEventListener("click", function() {
+              open3D(luogo);
+            });
+
+            azioni.appendChild(pulsante3D);
+          }
+
+          if (ha360) {
+            const pulsante360 = document.createElement("button");
+            pulsante360.textContent = "◉ Esplora a 360°";
+            pulsante360.className = "open360";
+
+            pulsante360.addEventListener("click", function() {
+              open360(luogo);
+            });
+
+            azioni.appendChild(pulsante360);
+          }
 
           contenuto.appendChild(titolo);
           contenuto.appendChild(localita);
           contenuto.appendChild(descrizione);
-          contenuto.appendChild(pulsante);
+
+          if (ha3D || ha360) {
+            contenuto.appendChild(azioni);
+          } else {
+            const nessunContenuto = document.createElement("small");
+            nessunContenuto.textContent =
+              "Contenuto digitale non ancora disponibile.";
+            contenuto.appendChild(nessunContenuto);
+          }
+
           marker.bindPopup(contenuto);
         });
 
@@ -504,26 +554,42 @@
       const overlay = document.getElementById("viewerOverlay");
       const frame = document.getElementById("viewerFrame");
 
-      if (luogo.tipo === "panorama360" && luogo.foto360) {
-        frame.src =
-          "https://cdn.pannellum.org/2.5/pannellum.htm" +
-          "?panorama=" +
-          encodeURIComponent(luogo.foto360) +
-          "&autoLoad=true";
-      }
-      else if (luogo.piattaforma === "sketchfab") {
+      if (luogo.piattaforma === "sketchfab" && luogo.modello) {
         frame.src =
           "https://sketchfab.com/models/" +
           luogo.modello +
           "/embed?autostart=1&ui_theme=dark";
       }
-      else if (luogo.piattaforma === "luma") {
+      else if (luogo.piattaforma === "luma" && luogo.modello) {
         frame.src = luogo.modello;
       }
       else {
-        alert("Contenuto non supportato");
+        alert("Modello 3D non disponibile");
         return;
       }
+
+      overlay.style.display = "flex";
+    }
+
+    function open360(luogo) {
+      const overlay = document.getElementById("viewerOverlay");
+      const frame = document.getElementById("viewerFrame");
+
+      const panorama = luogo.foto360 || luogo.immagine;
+
+      if (!panorama) {
+        alert("Panorama 360° non disponibile");
+        return;
+      }
+
+      const panoramaUrl =
+        new URL(panorama, window.location.href).href;
+
+      frame.src =
+        "https://cdn.pannellum.org/2.5/pannellum.htm" +
+        "?panorama=" +
+        encodeURIComponent(panoramaUrl) +
+        "&autoLoad=true";
 
       overlay.style.display = "flex";
     }
