@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>replYca – Mappa</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-family: Arial, sans-serif;
+      background: #0f1115;
+    }
+
+    body { overflow: hidden; }
+
+    #topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 72px;
+      z-index: 2000;
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      padding: 0 18px;
+      box-sizing: border-box;
+      background: #101217;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .glass {
+      background: rgba(16, 18, 23, 0.92);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    #brand {
+      color: white;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.7px;
+      padding: 10px 4px;
+      white-space: nowrap;
+    }
+
+    #searchWrap {
+      flex: 1;
+      min-width: 0;
+      max-width: 680px;
+      margin: 0 auto;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+    }
+
+    #searchInput {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: 0;
+      outline: 0;
+      color: white;
+      padding: 14px 8px;
+      font-size: 15px;
+    }
+
+    #searchInput::placeholder {
+      color: rgba(255,255,255,0.56);
+    }
+
+    #addPlace {
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      white-space: nowrap;
+      font-weight: 700;
+    }
+
+    #searchResults {
+      position: fixed;
+      top: 78px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2100;
+      width: min(620px, calc(100% - 48px));
+      display: none;
+      max-height: 46vh;
+      overflow: auto;
+      border-radius: 14px;
+      padding: 6px;
+    }
+
+    .search-result {
+      display: block;
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: white;
+      text-align: left;
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .search-result:hover,
+    .search-result:focus {
+      background: rgba(255,255,255,0.08);
+    }
+
+    .search-result strong {
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .search-result small {
+      color: rgba(255,255,255,0.64);
+    }
+
+    #map {
+      position: absolute;
+      top: 72px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+
+    #viewerOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.88);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #viewerBox {
+      position: relative;
+      width: 92%;
+      height: 88%;
+      background: #111;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    #viewerFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    #closeViewer {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 10000;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: #111;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .open3d {
+      width: 100%;
+      padding: 12px 14px;
+      background: #222;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .marker-3d {
+      width: 38px;
+      height: 38px;
+      background: #171717;
+      border: 3px solid white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
+    }
+
+    .marker-3d::after {
+      content: "⬡";
+      color: white;
+    }
+
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+    }
+
+    .leaflet-popup-content {
+      margin: 16px;
+      font-size: 15px;
+      line-height: 1.4;
+    }
+
+    @media (max-width: 768px) {
+      #map {
+        top: 64px;
+        height: auto;
+      }
+
+      #topbar {
+        height: 64px;
+        gap: 8px;
+        padding: 0 10px;
+      }
+
+      #brand {
+        padding: 12px 13px;
+      }
+
+      #addPlace {
+        padding: 12px 13px;
+        font-size: 0;
+      }
+
+      #addPlace::after {
+        content: "+";
+        font-size: 22px;
+      }
+
+      #searchInput {
+        font-size: 16px;
+        padding: 12px 6px;
+      }
+
+      #searchResults {
+        top: 70px;
+        width: calc(100% - 40px);
+      }
+
+      #viewerBox {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+      }
+
+      #closeViewer {
+        top: 16px;
+        right: 16px;
+        width: 46px;
+        height: 46px;
+        font-size: 28px;
+      }
+
+      .leaflet-popup-content {
+        min-width: 220px;
+        max-width: 78vw;
+      }
+
+      .leaflet-control-layers {
+        font-size: 14px;
+      }
+
+      .marker-3d {
+        width: 34px;
+        height: 34px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="topbar">
+    <a id="brand" href="index.html">replYca</a>
+
+    <div id="searchWrap" class="glass">
+      <span>⌕</span>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Cerca un luogo..."
+        autocomplete="off"
+        aria-label="Cerca un luogo"
+      >
+    </div>
+
+    <a id="addPlace" class="glass" href="admin.html">+ Aggiungi luogo</a>
+  </div>
+
+  <div id="searchResults" class="glass"></div>
+  <div id="map"></div>
+
+  <div id="viewerOverlay">
+    <div id="viewerBox">
+      <button id="closeViewer" onclick="close3D()">×</button>
+      <iframe
+        id="viewerFrame"
+        allow="autoplay; fullscreen; xr-spatial-tracking"
+        allowfullscreen>
+      </iframe>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map("map", { zoomControl: true }).setView([37.984268, 14.581352], 11);
+
+    // OpenStreetMap come mappa predefinita
+    const mappaStandard = L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+      }
+    ).addTo(map);
+
+    const mappaTopo = L.tileLayer(
+      "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      {
+        maxZoom: 17,
+        attribution: "&copy; OpenStreetMap contributors | OpenTopoMap"
+      }
+    );
+
+    const mappaSatellite = L.tileLayer(
+      "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      {
+        maxZoom: 19,
+        attribution: "Tiles &copy; Esri"
+      }
+    );
+
+    const mappeBase = {
+      "📍 OpenStreetMap": mappaStandard,
+      "🗺️ Topografica": mappaTopo,
+      "🛰️ Satellite": mappaSatellite
+    };
+
+    L.control.layers(mappeBase, null, {
+      position: "bottomright"
+    }).addTo(map);
+
+    const icona3D = L.divIcon({
+      className: "",
+      html: '<div class="marker-3d"></div>',
+      iconSize: [44, 44],
+      iconAnchor: [22, 22],
+      popupAnchor: [0, -24]
+    });
+
+    let luoghiData = [];
+    let markerByIndex = [];
+
+    fetch("luoghi.json")
+      .then(function(response) {
+        if (!response.ok) throw new Error("Errore nel caricamento di luoghi.json");
+        return response.json();
+      })
+      .then(function(luoghi) {
+        luoghiData = luoghi;
+        const bounds = [];
+
+        luoghi.forEach(function(luogo, index) {
+          const marker = L.marker(
+            [luogo.lat, luogo.lon],
+            { icon: icona3D }
+          ).addTo(map);
+
+          markerByIndex[index] = marker;
+          bounds.push([luogo.lat, luogo.lon]);
+
+          const contenuto = document.createElement("div");
+          contenuto.style.textAlign = "center";
+          contenuto.style.minWidth = "210px";
+
+          const titolo = document.createElement("h3");
+          titolo.textContent = luogo.nome;
+
+          const localita = document.createElement("div");
+          localita.textContent =
+            (luogo.localita || "") +
+            (luogo.provincia ? " · " + luogo.provincia : "");
+
+          const descrizione = document.createElement("p");
+          descrizione.textContent = luogo.descrizione || "";
+
+          const pulsante = document.createElement("button");
+          pulsante.textContent =
+            luogo.tipo === "panorama360" ? "Esplora a 360°" : "Esplora in 3D";
+          pulsante.className = "open3d";
+
+          pulsante.addEventListener("click", function() {
+            open3D(luogo);
+          });
+
+          contenuto.appendChild(titolo);
+          contenuto.appendChild(localita);
+          contenuto.appendChild(descrizione);
+          contenuto.appendChild(pulsante);
+          marker.bindPopup(contenuto);
+        });
+
+        if (bounds.length > 0) {
+          map.fitBounds(bounds, {
+            padding: [70, 70],
+            maxZoom: 13
+          });
+        }
+      })
+      .catch(function(error) {
+        console.error(error);
+      });
+
+    const searchInput = document.getElementById("searchInput");
+    const searchResults = document.getElementById("searchResults");
+
+    searchInput.addEventListener("input", function() {
+      const query = this.value.trim().toLowerCase();
+      searchResults.innerHTML = "";
+
+      if (!query) {
+        searchResults.style.display = "none";
+        return;
+      }
+
+      const matches = luoghiData
+        .map((luogo, index) => ({ luogo, index }))
+        .filter(({ luogo }) => {
+          const testo = [
+            luogo.nome,
+            luogo.localita,
+            luogo.comune,
+            luogo.provincia,
+            luogo.regione,
+            luogo.descrizione,
+            luogo.categoria
+          ].filter(Boolean).join(" ").toLowerCase();
+
+          return testo.includes(query);
+        })
+        .slice(0, 8);
+
+      if (!matches.length) {
+        const empty = document.createElement("div");
+        empty.style.padding = "14px";
+        empty.style.color = "rgba(255,255,255,.7)";
+        empty.textContent = "Nessun luogo trovato";
+        searchResults.appendChild(empty);
+        searchResults.style.display = "block";
+        return;
+      }
+
+      matches.forEach(({ luogo, index }) => {
+        const button = document.createElement("button");
+        button.className = "search-result";
+
+        const title = document.createElement("strong");
+        title.textContent = luogo.nome;
+
+        const meta = document.createElement("small");
+        meta.textContent = [luogo.localita || luogo.comune, luogo.provincia]
+          .filter(Boolean)
+          .join(" · ");
+
+        button.appendChild(title);
+        button.appendChild(meta);
+
+        button.addEventListener("click", function() {
+          map.setView([luogo.lat, luogo.lon], 16, { animate: true });
+          markerByIndex[index].openPopup();
+          searchInput.value = luogo.nome;
+          searchResults.style.display = "none";
+        });
+
+        searchResults.appendChild(button);
+      });
+
+      searchResults.style.display = "block";
+    });
+
+    document.addEventListener("click", function(event) {
+      if (!event.target.closest("#searchWrap") && !event.target.closest("#searchResults")) {
+        searchResults.style.display = "none";
+      }
+    });
+
+    function open3D(luogo) {
+      const overlay = document.getElementById("viewerOverlay");
+      const frame = document.getElementById("viewerFrame");
+
+      if (luogo.tipo === "panorama360" && luogo.foto360) {
+        frame.src =
+          "https://cdn.pannellum.org/2.5/pannellum.htm" +
+          "?panorama=" +
+          encodeURIComponent(luogo.foto360) +
+          "&autoLoad=true";
+      }
+      else if (luogo.piattaforma === "sketchfab") {
+        frame.src =
+          "https://sketchfab.com/models/" +
+          luogo.modello +
+          "/embed?autostart=1&ui_theme=dark";
+      }
+      else if (luogo.piattaforma === "luma") {
+        frame.src = luogo.modello;
+      }
+      else {
+        alert("Contenuto non supportato");
+        return;
+      }
+
+      overlay.style.display = "flex";
+    }
+
+    function close3D() {
+      document.getElementById("viewerOverlay").style.display = "none";
+      document.getElementById("viewerFrame").src = "";
+    }
+
+    document
+      .getElementById("viewerOverlay")
+      .addEventListener("click", function(event) {
+        if (event.target === this) close3D();
+      });
+  </script>
+
+</body>
+</html>
