@@ -55,7 +55,7 @@ a{
       rgba(3,20,32,.32) 65%,
       rgba(3,20,32,.12) 100%
     ),
-    url("image1.png");
+    url("images/image1.png");
 
   background-size:cover;
   background-position:center;
@@ -155,8 +155,6 @@ a{
   font-weight:800;
 }
 
-/* PHOTOGRAMMETRY MAP */
-
 .photogrammetry{
   margin-top:28px;
 
@@ -179,8 +177,6 @@ a{
   background:var(--blue);
 }
 
-/* EXPLORE CAPTURE PRESERVE */
-
 .triad{
   margin-top:36px;
 
@@ -193,8 +189,6 @@ a{
   color:var(--blue);
   padding:0 10px;
 }
-
-/* HEADLINE */
 
 h1{
   margin:36px 0 0;
@@ -411,7 +405,9 @@ h1{
   color:#d4dfe6;
 }
 
-/* CARDS */
+/* =========================
+   CARDS
+========================= */
 
 .cards{
   display:grid;
@@ -430,11 +426,19 @@ h1{
 
   background:#08253a;
 
-  transition:.2s;
+  transition:
+    transform .25s ease,
+    box-shadow .25s ease,
+    border-color .25s ease;
 }
 
 .card:hover{
-  transform:translateY(-4px);
+  transform:translateY(-5px);
+
+  border-color:rgba(0,168,255,.45);
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,.25);
 }
 
 .card-image{
@@ -444,68 +448,57 @@ h1{
 
   background-size:cover;
   background-position:center;
+  background-repeat:no-repeat;
 }
+
+/* ESPLORA */
 
 .explore{
-  background-image:url("image1.PNG");
+  background-image:
+    linear-gradient(
+      rgba(4,24,38,.02),
+      rgba(4,24,38,.20)
+    ),
+    url("images/esplora.png");
 }
+
+/* CATTURA */
 
 .capture{
-  background:
+  background-image:
     linear-gradient(
-      rgba(4,24,38,.15),
-      rgba(4,24,38,.35)
+      rgba(4,24,38,.02),
+      rgba(4,24,38,.20)
     ),
-    url("image1.PNG");
+    url("images/cattura.png");
 
-  background-size:cover;
-  background-position:65% center;
+  background-position:center;
 }
+
+/* PRESERVA */
 
 .preserve{
-  background:
+  background-image:
     linear-gradient(
-      135deg,
-      transparent 45%,
-      rgba(0,168,255,.45) 46%,
-      transparent 47%
+      rgba(4,24,38,.02),
+      rgba(4,24,38,.20)
     ),
-    linear-gradient(
-      30deg,
-      transparent 45%,
-      rgba(0,168,255,.25) 46%,
-      transparent 47%
-    ),
-    #0b3550;
+    url("images/preserva.png");
 
-  background-size:
-    30px 30px,
-    30px 30px,
-    auto;
+  background-position:center;
 }
 
+/* CONDIVIDI */
+
 .share{
-  background:
-    radial-gradient(
-      circle at 30% 35%,
-      #00a8ff 0 5px,
-      transparent 6px
-    ),
-    radial-gradient(
-      circle at 65% 60%,
-      #00a8ff 0 5px,
-      transparent 6px
-    ),
-    radial-gradient(
-      circle at 80% 30%,
-      #00a8ff 0 5px,
-      transparent 6px
-    ),
+  background-image:
     linear-gradient(
-      145deg,
-      #28516b,
-      #092a42
-    );
+      rgba(4,24,38,.02),
+      rgba(4,24,38,.20)
+    ),
+    url("images/condividi.png");
+
+  background-position:center;
 }
 
 .icon{
@@ -830,6 +823,8 @@ Insieme per preservare ciò che conta.
 
 <div class="cards">
 
+<!-- ESPLORA -->
+
 <a class="card" href="map.html">
 
 <div class="card-image explore">
@@ -847,6 +842,8 @@ ricostruiti in 3D e panorami a 360°.
 
 </div>
 </a>
+
+<!-- CATTURA -->
 
 <a class="card" href="guida.html">
 
@@ -866,6 +863,8 @@ il territorio con cura e precisione.
 </div>
 </a>
 
+<!-- PRESERVA -->
+
 <a class="card" href="missione.html">
 
 <div class="card-image preserve">
@@ -883,6 +882,8 @@ per il futuro, in formato digitale.
 
 </div>
 </a>
+
+<!-- CONDIVIDI -->
 
 <a class="card" href="missione.html">
 
