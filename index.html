@@ -1,72 +1,935 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>replYca — Photogrammetry Map</title>
-  <meta name="description" content="replYca documenta e rende esplorabile il patrimonio diffuso attraverso fotogrammetrie 3D e panorami 360°.">
-  <style>
-    :root{--navy:#081e2e;--navy2:#0c2b42;--blue:#00b4ff;--blue2:#6ed6ff;--white:#fff;--text:#0d1720;--muted:#687783;--line:rgba(255,255,255,.13);--shadow:0 18px 60px rgba(2,18,30,.24)}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,Arial,sans-serif;color:var(--text);background:#fff}a{text-decoration:none;color:inherit}
-    .hero{position:relative;min-height:760px;color:#fff;overflow:hidden;background:radial-gradient(circle at 78% 28%,rgba(0,180,255,.20),transparent 28%),linear-gradient(105deg,rgba(4,24,38,.96) 0%,rgba(5,37,59,.90) 46%,rgba(8,55,82,.72) 100%),linear-gradient(180deg,#123a58,#0a1f31)}
-    .hero:before{content:"";position:absolute;inset:0;opacity:.60;background:radial-gradient(circle at 82% 72%,rgba(0,180,255,.23) 0 2px,transparent 3px),linear-gradient(155deg,transparent 48%,rgba(0,180,255,.16) 49%,transparent 50%),linear-gradient(25deg,transparent 48%,rgba(0,180,255,.09) 49%,transparent 50%);background-size:auto,120px 120px,120px 120px;mask-image:linear-gradient(to left,#000,transparent 65%);-webkit-mask-image:linear-gradient(to left,#000,transparent 65%)}
-    .hero:after{content:"";position:absolute;right:-10%;bottom:-180px;width:70%;height:520px;border-radius:50% 0 0 0;background:radial-gradient(circle at 45% 25%,rgba(126,207,255,.22),transparent 28%),linear-gradient(160deg,#183f58 0 45%,#0e3148 45% 62%,#072435 62%);transform:rotate(-8deg);box-shadow:-40px -25px 100px rgba(0,0,0,.23);opacity:.86}
-    .nav{position:relative;z-index:5;width:min(1180px,calc(100% - 34px));height:76px;margin:auto;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
-    .logo{font-size:31px;font-weight:300;letter-spacing:-2px;white-space:nowrap}.logo strong{font-size:1.14em;color:var(--blue);font-weight:800;margin:0 -2px}.menu{display:flex;gap:32px;align-items:center;font-size:14px}.menu a{opacity:.92}.menu a:hover{color:var(--blue2)}
-    .hero-inner{position:relative;z-index:4;width:min(1180px,calc(100% - 34px));margin:auto;padding:112px 0 110px}.corner{position:absolute;width:28px;height:28px;border-color:var(--blue);border-style:solid;opacity:.9}.corner.tl{left:18px;top:90px;border-width:2px 0 0 2px}.corner.tr{right:18px;top:90px;border-width:2px 2px 0 0}.corner.bl{left:18px;bottom:32px;border-width:0 0 2px 2px}.corner.br{right:18px;bottom:32px;border-width:0 2px 2px 0}
-    .brand-lockup{margin-top:32px;max-width:650px}.brand-title{font-size:clamp(72px,10vw,128px);line-height:.78;font-weight:250;letter-spacing:-8px;margin:0}.brand-title strong{color:var(--blue);font-weight:800}.tag{margin-top:25px;letter-spacing:.42em;font-size:14px;font-weight:700;color:#dceaf4}.tag:before,.tag:after{content:"";display:inline-block;vertical-align:middle;width:42px;height:2px;background:var(--blue);margin:0 14px}.pill-line{margin:36px 0 46px;letter-spacing:.31em;font-size:15px;font-weight:700}.dot{color:var(--blue);padding:0 12px}
-    .copy{max-width:540px;margin-top:34px}.copy h1{margin:0 0 12px;font-size:28px;line-height:1.15}.copy p{margin:0;color:#d4e0e8;font-size:16px;line-height:1.55}.actions{margin-top:34px;width:min(390px,100%);display:grid;gap:12px}.btn{min-height:54px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:800;border:1px solid rgba(255,255,255,.8)}.btn.primary{background:linear-gradient(90deg,#04aef2,#0e8ef0);border-color:transparent;box-shadow:0 14px 28px rgba(0,169,255,.22)}.btn.secondary{background:rgba(0,0,0,.08)}
-    .floating-card{position:absolute;right:32px;bottom:60px;z-index:4;padding:15px 18px;border-radius:18px;background:rgba(3,28,44,.83);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(10px);display:flex;gap:13px;align-items:center;box-shadow:var(--shadow)}.cube{width:38px;height:38px;border:2px solid var(--blue);border-radius:10px;display:grid;place-items:center;font-size:19px}.floating-card small{display:block;color:#a9c2d2;margin-top:3px}.scroll{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:5;font-size:10px;letter-spacing:.24em;color:#d9e7ef;text-align:center}.scroll b{display:block;width:22px;height:34px;border:1px solid #fff;border-radius:12px;margin:0 auto 8px;position:relative}.scroll b:after{content:"";position:absolute;left:50%;top:7px;width:2px;height:8px;background:#fff;transform:translateX(-50%);border-radius:2px}
-    .project{padding:48px 20px 58px;background:#fff}.project-inner{width:min(1180px,100%);margin:auto}.project h2{margin:0;text-align:center;font-size:34px;letter-spacing:-1.4px}.project .subtitle{text-align:center;color:var(--muted);margin:9px auto 28px;max-width:760px;font-size:15px}.underline{width:160px;height:3px;background:linear-gradient(90deg,transparent,var(--blue),transparent);margin:0 auto 26px}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.card{border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 8px 26px rgba(20,47,66,.11);border:1px solid #e6eef3;transition:.2s transform}.card:hover{transform:translateY(-3px)}
-    .visual{height:150px;position:relative;background:radial-gradient(circle at 70% 28%,rgba(0,180,255,.22),transparent 24%),linear-gradient(145deg,#1a4f70,#08334d)}.visual.v2{background:radial-gradient(circle at 56% 43%,#bdeaff 0 2%,transparent 3%),linear-gradient(145deg,#355b70,#0e2d3f)}.visual.v3{background:linear-gradient(135deg,transparent 45%,rgba(0,180,255,.28) 46%,transparent 47%),linear-gradient(25deg,transparent 45%,rgba(0,180,255,.20) 46%,transparent 47%),#0d2f44;background-size:34px 34px,34px 34px,auto}.visual.v4{background:radial-gradient(circle at 30% 38%,#00b4ff 0 3px,transparent 4px),radial-gradient(circle at 70% 60%,#00b4ff 0 3px,transparent 4px),linear-gradient(145deg,#2f677f,#0e344d)}
-    .icon{position:absolute;left:18px;bottom:-22px;width:46px;height:46px;border-radius:50%;background:#fff;border:1px solid #d9e6ee;color:var(--blue);display:grid;place-items:center;font-size:21px;box-shadow:0 7px 16px rgba(10,37,55,.12)}.card-copy{padding:32px 20px 20px}.card-copy h3{margin:0 0 6px;font-size:20px}.card-copy p{margin:0;color:#586976;line-height:1.45;font-size:14px}
-    footer{background:var(--navy);color:#c7d6df;padding:30px 20px}.footer-inner{width:min(1180px,100%);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}.footer-logo{color:#fff;font-size:26px;font-weight:300;letter-spacing:-1.5px}.footer-logo strong{color:var(--blue);font-weight:800}.footer-tag{font-size:12px;letter-spacing:.26em}
-    @media(max-width:900px){.menu{gap:18px}.cards{grid-template-columns:repeat(2,1fr)}.floating-card{display:none}}
-    @media(max-width:640px){.hero{min-height:720px}.nav{height:auto;min-height:68px;padding:12px 0;align-items:flex-start}.menu{gap:9px;flex-wrap:wrap;justify-content:flex-end;font-size:12px}.hero-inner{padding:92px 0 100px}.brand-title{font-size:clamp(62px,20vw,92px);letter-spacing:-5px}.tag{font-size:10px;letter-spacing:.28em}.tag:before,.tag:after{width:20px;margin:0 7px}.pill-line{font-size:11px;letter-spacing:.18em}.copy h1{font-size:25px}.copy p{font-size:15px}.cards{grid-template-columns:1fr}.visual{height:170px}.project h2{font-size:29px}.scroll{display:none}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>replYca — Photogrammetry Map</title>
+
+<meta name="description" content="replYca documenta e preserva digitalmente luoghi e opere attraverso fotogrammetrie 3D e panorami a 360°.">
+
+<style>
+
+:root{
+  --navy:#081e2e;
+  --navy2:#0d2a3f;
+  --blue:#00a8ff;
+  --white:#ffffff;
+  --muted:#d1dde5;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--navy);
+  color:white;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  position:relative;
+  min-height:850px;
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3,20,32,.94) 0%,
+      rgba(3,20,32,.80) 30%,
+      rgba(3,20,32,.32) 65%,
+      rgba(3,20,32,.12) 100%
+    ),
+    url("image1.PNG");
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:170px;
+
+  background:linear-gradient(
+    transparent,
+    rgba(4,24,38,.65)
+  );
+
+  pointer-events:none;
+}
+
+/* =========================
+   NAV
+========================= */
+
+.nav{
+  position:relative;
+  z-index:10;
+
+  width:min(1200px,calc(100% - 50px));
+  margin:auto;
+
+  min-height:85px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.logo{
+  font-size:34px;
+  font-weight:300;
+  letter-spacing:-3px;
+}
+
+.logo .y{
+  color:var(--blue);
+  font-weight:800;
+}
+
+.menu{
+  display:flex;
+  align-items:center;
+  gap:35px;
+
+  font-size:14px;
+  font-weight:600;
+}
+
+.menu a:hover{
+  color:var(--blue);
+}
+
+/* =========================
+   HERO CONTENT
+========================= */
+
+.hero-inner{
+  position:relative;
+  z-index:5;
+
+  width:min(1200px,calc(100% - 50px));
+  margin:auto;
+
+  padding-top:125px;
+}
+
+.hero-copy{
+  width:min(560px,100%);
+}
+
+.hero-logo{
+  font-size:clamp(78px,10vw,132px);
+  line-height:.85;
+
+  font-weight:300;
+  letter-spacing:-9px;
+
+  white-space:nowrap;
+}
+
+.hero-logo .y{
+  color:var(--blue);
+  font-weight:800;
+}
+
+/* PHOTOGRAMMETRY MAP */
+
+.photogrammetry{
+  margin-top:28px;
+
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.30em;
+}
+
+.photogrammetry::before,
+.photogrammetry::after{
+  content:"";
+
+  width:45px;
+  height:2px;
+
+  background:var(--blue);
+}
+
+/* EXPLORE CAPTURE PRESERVE */
+
+.triad{
+  margin-top:36px;
+
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.25em;
+}
+
+.triad span{
+  color:var(--blue);
+  padding:0 10px;
+}
+
+/* HEADLINE */
+
+h1{
+  margin:36px 0 0;
+
+  font-size:48px;
+  line-height:1.05;
+
+  letter-spacing:-2px;
+}
+
+.blue{
+  color:var(--blue);
+}
+
+.description{
+  margin-top:18px;
+
+  max-width:520px;
+
+  font-size:17px;
+  line-height:1.55;
+
+  color:#eef5f9;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.buttons{
+  margin-top:35px;
+
+  width:320px;
+  max-width:100%;
+
+  display:grid;
+  gap:14px;
+}
+
+.button{
+  min-height:58px;
+
+  border-radius:32px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:17px;
+  font-weight:700;
+
+  transition:.2s;
+}
+
+.button:hover{
+  transform:translateY(-2px);
+}
+
+.primary{
+  background:linear-gradient(
+    90deg,
+    #06b2fa,
+    #087fff
+  );
+
+  box-shadow:
+    0 12px 30px rgba(0,150,255,.30);
+}
+
+.secondary{
+  border:1.5px solid var(--blue);
+
+  background:rgba(5,25,40,.40);
+}
+
+/* =========================
+   CORNERS
+========================= */
+
+.corner{
+  position:absolute;
+  z-index:3;
+
+  width:32px;
+  height:32px;
+
+  border-color:var(--blue);
+  border-style:solid;
+}
+
+.tl{
+  top:110px;
+  left:28px;
+
+  border-width:2px 0 0 2px;
+}
+
+.tr{
+  top:110px;
+  right:28px;
+
+  border-width:2px 2px 0 0;
+}
+
+.bl{
+  bottom:30px;
+  left:28px;
+
+  border-width:0 0 2px 2px;
+}
+
+.br{
+  bottom:30px;
+  right:28px;
+
+  border-width:0 2px 2px 0;
+}
+
+/* =========================
+   MODEL CARD
+========================= */
+
+.model-card{
+  position:absolute;
+
+  right:35px;
+  bottom:48px;
+
+  z-index:6;
+
+  display:flex;
+  align-items:center;
+  gap:13px;
+
+  padding:15px 20px;
+
+  border-radius:17px;
+
+  background:rgba(5,28,44,.85);
+
+  border:1px solid rgba(255,255,255,.18);
+
+  backdrop-filter:blur(10px);
+}
+
+.model-icon{
+  width:44px;
+  height:44px;
+
+  border-radius:13px;
+
+  display:grid;
+  place-items:center;
+
+  background:linear-gradient(
+    #0a91ff,
+    #006fe0
+  );
+
+  font-size:22px;
+}
+
+.model-card strong{
+  font-size:15px;
+}
+
+.model-card small{
+  display:block;
+
+  margin-top:4px;
+
+  color:#cbd8e0;
+
+  font-size:11px;
+}
+
+/* =========================
+   PROJECT SECTION
+========================= */
+
+.project{
+  padding:34px 24px 45px;
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(0,150,255,.12),
+      transparent 38%
+    ),
+    linear-gradient(
+      #08243a,
+      #061b2b
+    );
+}
+
+.project-inner{
+  width:min(1200px,100%);
+  margin:auto;
+}
+
+.project h2{
+  margin:0;
+
+  text-align:center;
+
+  font-size:34px;
+}
+
+.project-sub{
+  margin:8px 0 28px;
+
+  text-align:center;
+
+  color:#d4dfe6;
+}
+
+/* CARDS */
+
+.cards{
+  display:grid;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:15px;
+}
+
+.card{
+  overflow:hidden;
+
+  border-radius:16px;
+
+  border:1px solid rgba(255,255,255,.14);
+
+  background:#08253a;
+
+  transition:.2s;
+}
+
+.card:hover{
+  transform:translateY(-4px);
+}
+
+.card-image{
+  height:180px;
+
+  position:relative;
+
+  background-size:cover;
+  background-position:center;
+}
+
+.explore{
+  background-image:url("image1.PNG");
+}
+
+.capture{
+  background:
+    linear-gradient(
+      rgba(4,24,38,.15),
+      rgba(4,24,38,.35)
+    ),
+    url("image1.PNG");
+
+  background-size:cover;
+  background-position:65% center;
+}
+
+.preserve{
+  background:
+    linear-gradient(
+      135deg,
+      transparent 45%,
+      rgba(0,168,255,.45) 46%,
+      transparent 47%
+    ),
+    linear-gradient(
+      30deg,
+      transparent 45%,
+      rgba(0,168,255,.25) 46%,
+      transparent 47%
+    ),
+    #0b3550;
+
+  background-size:
+    30px 30px,
+    30px 30px,
+    auto;
+}
+
+.share{
+  background:
+    radial-gradient(
+      circle at 30% 35%,
+      #00a8ff 0 5px,
+      transparent 6px
+    ),
+    radial-gradient(
+      circle at 65% 60%,
+      #00a8ff 0 5px,
+      transparent 6px
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      #00a8ff 0 5px,
+      transparent 6px
+    ),
+    linear-gradient(
+      145deg,
+      #28516b,
+      #092a42
+    );
+}
+
+.icon{
+  position:absolute;
+
+  left:17px;
+  bottom:-25px;
+
+  width:52px;
+  height:52px;
+
+  border-radius:50%;
+
+  display:grid;
+  place-items:center;
+
+  background:white;
+
+  color:#0786f7;
+
+  font-size:23px;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.20);
+}
+
+.card-content{
+  padding:37px 19px 22px;
+}
+
+.card-content h3{
+  margin:0 0 7px;
+
+  font-size:20px;
+}
+
+.card-content p{
+  margin:0;
+
+  font-size:14px;
+  line-height:1.45;
+
+  color:#d5e0e7;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+footer{
+  padding:28px 25px;
+
+  background:#061a2a;
+
+  border-top:1px solid rgba(255,255,255,.10);
+}
+
+.footer-inner{
+  width:min(1200px,100%);
+  margin:auto;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  gap:20px;
+
+  flex-wrap:wrap;
+}
+
+.footer-logo{
+  font-size:29px;
+
+  font-weight:300;
+
+  letter-spacing:-2px;
+}
+
+.footer-logo .y{
+  color:var(--blue);
+
+  font-weight:800;
+}
+
+.footer-text{
+  font-size:12px;
+
+  letter-spacing:.25em;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+  .hero{
+    min-height:820px;
+
+    background-position:62% center;
+  }
+
+  .nav{
+    width:calc(100% - 28px);
+
+    min-height:75px;
+  }
+
+  .logo{
+    font-size:27px;
+  }
+
+  .menu{
+    gap:13px;
+
+    font-size:12px;
+  }
+
+  .hero-inner{
+    width:calc(100% - 34px);
+
+    padding-top:115px;
+  }
+
+  .hero-logo{
+    font-size:82px;
+
+    letter-spacing:-6px;
+  }
+
+  .photogrammetry{
+    font-size:10px;
+
+    letter-spacing:.20em;
+
+    gap:8px;
+  }
+
+  .photogrammetry::before,
+  .photogrammetry::after{
+    width:27px;
+  }
+
+  .triad{
+    font-size:11px;
+
+    letter-spacing:.15em;
+  }
+
+  h1{
+    margin-top:30px;
+
+    font-size:37px;
+  }
+
+  .description{
+    font-size:15px;
+  }
+
+  .buttons{
+    width:100%;
+  }
+
+  .model-card{
+    display:none;
+  }
+
+  .corner{
+    display:none;
+  }
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .card-image{
+    height:200px;
+  }
+
+}
+
+/* VERY SMALL SCREENS */
+
+@media(max-width:400px){
+
+  .menu{
+    gap:9px;
+
+    font-size:11px;
+  }
+
+  .hero-logo{
+    font-size:72px;
+  }
+
+  h1{
+    font-size:33px;
+  }
+
+}
+
+</style>
 </head>
+
 <body>
+
+<!-- =========================
+     HERO
+========================= -->
+
 <section class="hero">
-  <div class="nav">
-    <a class="logo" href="index.html">repl<strong>Y</strong>ca</a>
-    <nav class="menu" aria-label="Navigazione principale">
-      <a href="map.html">Mappa</a>
-      <a href="guida.html">Impara</a>
-      <a href="missione.html">Missione</a>
-    </nav>
-  </div>
-  <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-  <div class="hero-inner">
-    <div class="brand-lockup">
-      <div class="brand-title">repl<strong>Y</strong>ca</div>
-      <div class="tag">PHOTOGRAMMETRY MAP</div>
-      <div class="pill-line">EXPLORE <span class="dot">•</span> CAPTURE <span class="dot">•</span> PRESERVE</div>
-      <div class="copy">
-        <h1>Una mappa dei luoghi,<br>preservati digitalmente.</h1>
-        <p>Esplora fotogrammetrie 3D e panorami a 360° del patrimonio che merita di essere documentato, conosciuto e ricordato.</p>
-      </div>
-      <div class="actions">
-        <a class="btn primary" href="map.html">⌖ Esplora la mappa →</a>
-        <a class="btn secondary" href="missione.html">Scopri il progetto</a>
-      </div>
-    </div>
-  </div>
-  <div class="floating-card"><div class="cube">⬡</div><div><strong>Archivio digitale</strong><small>3D · 360° · luoghi</small></div></div>
-  <div class="scroll"><b></b>SCORRI PER SCOPRIRE</div>
+
+<header class="nav">
+
+<a class="logo" href="index.html">
+repl<span class="y">Y</span>ca
+</a>
+
+<nav class="menu">
+
+<a href="map.html">
+Mappa
+</a>
+
+<a href="guida.html">
+Impara
+</a>
+
+<a href="missione.html">
+Missione
+</a>
+
+</nav>
+
+</header>
+
+<span class="corner tl"></span>
+<span class="corner tr"></span>
+<span class="corner bl"></span>
+<span class="corner br"></span>
+
+<div class="hero-inner">
+
+<div class="hero-copy">
+
+<div class="hero-logo">
+repl<span class="y">Y</span>ca
+</div>
+
+<div class="photogrammetry">
+PHOTOGRAMMETRY MAP
+</div>
+
+<div class="triad">
+EXPLORE
+<span>•</span>
+CAPTURE
+<span>•</span>
+PRESERVE
+</div>
+
+<h1>
+Una mappa dei luoghi,<br>
+<span class="blue">
+preservati digitalmente.
+</span>
+</h1>
+
+<p class="description">
+Esplora fotogrammetrie 3D e panorami a 360° del patrimonio
+che merita di essere documentato, conosciuto e ricordato.
+</p>
+
+<div class="buttons">
+
+<a class="button primary" href="map.html">
+⌖ &nbsp; Esplora la mappa &nbsp; →
+</a>
+
+<a class="button secondary" href="missione.html">
+Scopri il progetto
+</a>
+
+</div>
+
+</div>
+</div>
+
+<div class="model-card">
+
+<div class="model-icon">
+⬡
+</div>
+
+<div>
+<strong>Modelli 3D</strong>
+<small>
+Patrimonio digitale replYca
+</small>
+</div>
+
+</div>
+
 </section>
+
+<!-- =========================
+     PROJECT
+========================= -->
+
 <section class="project">
-  <div class="project-inner">
-    <h2>Un progetto per tutti</h2>
-    <p class="subtitle">Droni, fotocamere e passione per il territorio. Documentare oggi per preservare ciò che conta.</p>
-    <div class="underline"></div>
-    <div class="cards">
-      <a class="card" href="map.html"><div class="visual"><div class="icon">⌖</div></div><div class="card-copy"><h3>Esplora</h3><p>Naviga la mappa e scopri luoghi ricostruiti in 3D e panorami immersivi.</p></div></a>
-      <a class="card" href="guida.html"><div class="visual v2"><div class="icon">◉</div></div><div class="card-copy"><h3>Cattura</h3><p>Scopri come utilizzare droni e fotocamere per creare una fotogrammetria.</p></div></a>
-      <a class="card" href="missione.html"><div class="visual v3"><div class="icon">⬡</div></div><div class="card-copy"><h3>Preserva</h3><p>Mantieni viva la memoria digitale dei luoghi e delle opere meno conosciute.</p></div></a>
-      <a class="card" href="missione.html"><div class="visual v4"><div class="icon">◎</div></div><div class="card-copy"><h3>Condividi</h3><p>Conosci la missione di replYca e scopri come il progetto può crescere nel tempo.</p></div></a>
-    </div>
-  </div>
+
+<div class="project-inner">
+
+<h2>
+Un progetto per <span class="blue">tutti</span>
+</h2>
+
+<p class="project-sub">
+Droni, fotocamere e passione per il territorio.
+Insieme per preservare ciò che conta.
+</p>
+
+<div class="cards">
+
+<a class="card" href="map.html">
+
+<div class="card-image explore">
+<div class="icon">⌖</div>
+</div>
+
+<div class="card-content">
+
+<h3>Esplora</h3>
+
+<p>
+Naviga la mappa e scopri luoghi unici
+ricostruiti in 3D e panorami a 360°.
+</p>
+
+</div>
+</a>
+
+<a class="card" href="guida.html">
+
+<div class="card-image capture">
+<div class="icon">◉</div>
+</div>
+
+<div class="card-content">
+
+<h3>Cattura</h3>
+
+<p>
+Utilizza droni o fotocamere per documentare
+il territorio con cura e precisione.
+</p>
+
+</div>
+</a>
+
+<a class="card" href="missione.html">
+
+<div class="card-image preserve">
+<div class="icon">⬡</div>
+</div>
+
+<div class="card-content">
+
+<h3>Preserva</h3>
+
+<p>
+Mantieni viva la memoria dei luoghi
+per il futuro, in formato digitale.
+</p>
+
+</div>
+</a>
+
+<a class="card" href="missione.html">
+
+<div class="card-image share">
+<div class="icon">◎</div>
+</div>
+
+<div class="card-content">
+
+<h3>Condividi</h3>
+
+<p>
+Contribuisci alla crescita del progetto
+e alla conoscenza del patrimonio diffuso.
+</p>
+
+</div>
+</a>
+
+</div>
+</div>
+
 </section>
-<footer><div class="footer-inner"><div class="footer-logo">repl<strong>Y</strong>ca</div><div class="footer-tag">EXPLORE • CAPTURE • PRESERVE</div></div></footer>
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer>
+
+<div class="footer-inner">
+
+<div class="footer-logo">
+repl<span class="y">Y</span>ca
+</div>
+
+<div class="footer-text">
+EXPLORE • CAPTURE • PRESERVE
+</div>
+
+<div>
+© replYca
+</div>
+
+</div>
+
+</footer>
+
 </body>
 </html>
