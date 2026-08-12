@@ -50,5 +50,20 @@
     "anno_scansione": 2026,
     "foto360": "https://al83m.github.io/discovery-nebrodi-map/dji_fly_20240316_105652_370_1710590460998_pano_optimized.JPG?utm_source=chatgpt.com",
     "descrizione": "Archivio digitale - replYca"
+  },
+  {
+    "nome": "P",
+    "tipo": "fotogrammetria",
+    "regione": "",
+    "provincia": "",
+    "localita": "",
+    "lat": 38.15867659914294,
+    "lon": 14.743194580078113,
+    "categoria": "Altro",
+    "anno_scansione": 2026,
+    "descrizione": "Archivio digitale - replYca",
+    "piattaforma": "sketchfab",
+    "modello": "ff8814b35f4249d39849245510444054",
+    "foto": ""
   }
 ]
