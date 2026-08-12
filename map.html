@@ -21,18 +21,15 @@
 
     #topbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 72px;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 2000;
+      width: min(940px, calc(100% - 24px));
       display: flex;
-      gap: 14px;
+      gap: 10px;
       align-items: center;
-      padding: 0 18px;
-      box-sizing: border-box;
-      background: #101217;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
+      pointer-events: none;
     }
 
     .glass {
@@ -44,21 +41,27 @@
     }
 
     #brand {
-      color: white;
+      pointer-events: auto;
       text-decoration: none;
-      font-weight: 800;
-      font-size: 22px;
-      letter-spacing: -0.7px;
-      padding: 10px 4px;
+      border-radius: 14px;
+      padding: 10px 14px;
       white-space: nowrap;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #brand img {
+      width:120px;
+      height:auto;
+      display:block;
     }
 
     #searchWrap {
+      pointer-events: auto;
       flex: 1;
       min-width: 0;
-      max-width: 680px;
-      margin: 0 auto;
-      border-radius: 12px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       padding: 0 12px;
@@ -80,9 +83,10 @@
     }
 
     #addPlace {
+      pointer-events: auto;
       color: white;
       text-decoration: none;
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 13px 16px;
       white-space: nowrap;
       font-weight: 700;
@@ -90,7 +94,7 @@
 
     #searchResults {
       position: fixed;
-      top: 78px;
+      top: 70px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 2100;
@@ -129,11 +133,8 @@
     }
 
     #map {
-      position: absolute;
-      top: 72px;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      width: 100%;
+      height: 100vh;
     }
 
     #viewerOverlay {
@@ -176,27 +177,10 @@
       cursor: pointer;
     }
 
-    .content-actions {
-      display: grid;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
     .open3d {
       width: 100%;
       padding: 12px 14px;
       background: #222;
-      color: white;
-      border: 0;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .open360 {
-      width: 100%;
-      padding: 12px 14px;
-      background: #0f6fae;
       color: white;
       border: 0;
       border-radius: 8px;
@@ -233,19 +217,20 @@
     }
 
     @media (max-width: 768px) {
-      #map {
-        top: 64px;
-        height: auto;
-      }
+      #map { height: 100dvh; }
 
       #topbar {
-        height: 64px;
+        top: 10px;
+        width: calc(100% - 20px);
         gap: 8px;
-        padding: 0 10px;
       }
 
       #brand {
-        padding: 12px 13px;
+        padding: 10px 11px;
+      }
+
+      #brand img {
+        width:96px;
       }
 
       #addPlace {
@@ -264,7 +249,7 @@
       }
 
       #searchResults {
-        top: 70px;
+        top: 66px;
         width: calc(100% - 40px);
       }
 
@@ -303,7 +288,9 @@
 <body>
 
   <div id="topbar">
-    <a id="brand" href="index.html">replYca</a>
+    <a id="brand" class="glass" href="index.html">
+      <img src="images/logo.png" alt="replYca">
+    </a>
 
     <div id="searchWrap" class="glass">
       <span>⌕</span>
@@ -316,7 +303,7 @@
       >
     </div>
 
-    
+    <a id="addPlace" class="glass" href="admin.html">+ Aggiungi luogo</a>
   </div>
 
   <div id="searchResults" class="glass"></div>
@@ -417,52 +404,19 @@
           const descrizione = document.createElement("p");
           descrizione.textContent = luogo.descrizione || "";
 
-          const azioni = document.createElement("div");
-          azioni.className = "content-actions";
+          const pulsante = document.createElement("button");
+          pulsante.textContent =
+            luogo.tipo === "panorama360" ? "Esplora a 360°" : "Esplora in 3D";
+          pulsante.className = "open3d";
 
-          const ha3D =
-            (luogo.piattaforma === "sketchfab" && luogo.modello) ||
-            (luogo.piattaforma === "luma" && luogo.modello);
-
-          const ha360 = Boolean(luogo.foto360 || luogo.immagine);
-
-          if (ha3D) {
-            const pulsante3D = document.createElement("button");
-            pulsante3D.textContent = "⬡ Esplora in 3D";
-            pulsante3D.className = "open3d";
-
-            pulsante3D.addEventListener("click", function() {
-              open3D(luogo);
-            });
-
-            azioni.appendChild(pulsante3D);
-          }
-
-          if (ha360) {
-            const pulsante360 = document.createElement("button");
-            pulsante360.textContent = "◉ Esplora a 360°";
-            pulsante360.className = "open360";
-
-            pulsante360.addEventListener("click", function() {
-              open360(luogo);
-            });
-
-            azioni.appendChild(pulsante360);
-          }
+          pulsante.addEventListener("click", function() {
+            open3D(luogo);
+          });
 
           contenuto.appendChild(titolo);
           contenuto.appendChild(localita);
           contenuto.appendChild(descrizione);
-
-          if (ha3D || ha360) {
-            contenuto.appendChild(azioni);
-          } else {
-            const nessunContenuto = document.createElement("small");
-            nessunContenuto.textContent =
-              "Contenuto digitale non ancora disponibile.";
-            contenuto.appendChild(nessunContenuto);
-          }
-
+          contenuto.appendChild(pulsante);
           marker.bindPopup(contenuto);
         });
 
@@ -554,42 +508,26 @@
       const overlay = document.getElementById("viewerOverlay");
       const frame = document.getElementById("viewerFrame");
 
-      if (luogo.piattaforma === "sketchfab" && luogo.modello) {
+      if (luogo.tipo === "panorama360" && luogo.foto360) {
+        frame.src =
+          "https://cdn.pannellum.org/2.5/pannellum.htm" +
+          "?panorama=" +
+          encodeURIComponent(luogo.foto360) +
+          "&autoLoad=true";
+      }
+      else if (luogo.piattaforma === "sketchfab") {
         frame.src =
           "https://sketchfab.com/models/" +
           luogo.modello +
           "/embed?autostart=1&ui_theme=dark";
       }
-      else if (luogo.piattaforma === "luma" && luogo.modello) {
+      else if (luogo.piattaforma === "luma") {
         frame.src = luogo.modello;
       }
       else {
-        alert("Modello 3D non disponibile");
+        alert("Contenuto non supportato");
         return;
       }
-
-      overlay.style.display = "flex";
-    }
-
-    function open360(luogo) {
-      const overlay = document.getElementById("viewerOverlay");
-      const frame = document.getElementById("viewerFrame");
-
-      const panorama = luogo.foto360 || luogo.immagine;
-
-      if (!panorama) {
-        alert("Panorama 360° non disponibile");
-        return;
-      }
-
-      const panoramaUrl =
-        new URL(panorama, window.location.href).href;
-
-      frame.src =
-        "https://cdn.pannellum.org/2.5/pannellum.htm" +
-        "?panorama=" +
-        encodeURIComponent(panoramaUrl) +
-        "&autoLoad=true";
 
       overlay.style.display = "flex";
     }
