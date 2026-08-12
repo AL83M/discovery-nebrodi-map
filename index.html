@@ -99,14 +99,14 @@ a{
 }
 
 .logo{
-  font-size:34px;
-  font-weight:300;
-  letter-spacing:-3px;
+  display:flex;
+  align-items:center;
 }
 
-.logo .y{
-  color:var(--blue);
-  font-weight:800;
+.logo img{
+  width:150px;
+  height:auto;
+  display:block;
 }
 
 .menu{
@@ -141,19 +141,16 @@ a{
 }
 
 .hero-logo{
-  font-size:clamp(78px,10vw,132px);
-  line-height:.85;
-
-  font-weight:300;
-  letter-spacing:-9px;
-
-  white-space:nowrap;
+  width:min(520px,100%);
 }
 
-.hero-logo .y{
-  color:var(--blue);
-  font-weight:800;
+.hero-logo img{
+  width:100%;
+  height:auto;
+  display:block;
 }
+
+/* PHOTOGRAMMETRY MAP */
 
 .photogrammetry{
   margin-top:28px;
@@ -177,6 +174,8 @@ a{
   background:var(--blue);
 }
 
+/* EXPLORE CAPTURE PRESERVE */
+
 .triad{
   margin-top:36px;
 
@@ -189,6 +188,8 @@ a{
   color:var(--blue);
   padding:0 10px;
 }
+
+/* HEADLINE */
 
 h1{
   margin:36px 0 0;
@@ -405,9 +406,7 @@ h1{
   color:#d4dfe6;
 }
 
-/* =========================
-   CARDS
-========================= */
+/* CARDS */
 
 .cards{
   display:grid;
@@ -426,19 +425,11 @@ h1{
 
   background:#08253a;
 
-  transition:
-    transform .25s ease,
-    box-shadow .25s ease,
-    border-color .25s ease;
+  transition:.2s;
 }
 
 .card:hover{
-  transform:translateY(-5px);
-
-  border-color:rgba(0,168,255,.45);
-
-  box-shadow:
-    0 15px 35px rgba(0,0,0,.25);
+  transform:translateY(-4px);
 }
 
 .card-image{
@@ -451,53 +442,30 @@ h1{
   background-repeat:no-repeat;
 }
 
-/* ESPLORA */
-
 .explore{
   background-image:
-    linear-gradient(
-      rgba(4,24,38,.02),
-      rgba(4,24,38,.20)
-    ),
+    linear-gradient(rgba(4,24,38,.02),rgba(4,24,38,.20)),
     url("images/esplora.png");
 }
 
-/* CATTURA */
-
 .capture{
   background-image:
-    linear-gradient(
-      rgba(4,24,38,.02),
-      rgba(4,24,38,.20)
-    ),
+    linear-gradient(rgba(4,24,38,.02),rgba(4,24,38,.20)),
     url("images/cattura.png");
-
   background-position:center;
 }
-
-/* PRESERVA */
 
 .preserve{
   background-image:
-    linear-gradient(
-      rgba(4,24,38,.02),
-      rgba(4,24,38,.20)
-    ),
+    linear-gradient(rgba(4,24,38,.02),rgba(4,24,38,.20)),
     url("images/preserva.png");
-
   background-position:center;
 }
 
-/* CONDIVIDI */
-
 .share{
   background-image:
-    linear-gradient(
-      rgba(4,24,38,.02),
-      rgba(4,24,38,.20)
-    ),
+    linear-gradient(rgba(4,24,38,.02),rgba(4,24,38,.20)),
     url("images/condividi.png");
-
   background-position:center;
 }
 
@@ -570,17 +538,14 @@ footer{
 }
 
 .footer-logo{
-  font-size:29px;
-
-  font-weight:300;
-
-  letter-spacing:-2px;
+  display:flex;
+  align-items:center;
 }
 
-.footer-logo .y{
-  color:var(--blue);
-
-  font-weight:800;
+.footer-logo img{
+  width:130px;
+  height:auto;
+  display:block;
 }
 
 .footer-text{
@@ -607,8 +572,8 @@ footer{
     min-height:75px;
   }
 
-  .logo{
-    font-size:27px;
+  .logo img{
+    width:120px;
   }
 
   .menu{
@@ -624,9 +589,7 @@ footer{
   }
 
   .hero-logo{
-    font-size:82px;
-
-    letter-spacing:-6px;
+    width:min(420px,100%);
   }
 
   .photogrammetry{
@@ -691,7 +654,7 @@ footer{
   }
 
   .hero-logo{
-    font-size:72px;
+    width:min(360px,100%);
   }
 
   h1{
@@ -714,7 +677,7 @@ footer{
 <header class="nav">
 
 <a class="logo" href="index.html">
-repl<span class="y">Y</span>ca
+  <img src="images/logo.png" alt="replYca">
 </a>
 
 <nav class="menu">
@@ -745,7 +708,7 @@ Missione
 <div class="hero-copy">
 
 <div class="hero-logo">
-repl<span class="y">Y</span>ca
+  <img src="images/logo.png" alt="replYca">
 </div>
 
 <div class="photogrammetry">
@@ -823,8 +786,6 @@ Insieme per preservare ciò che conta.
 
 <div class="cards">
 
-<!-- ESPLORA -->
-
 <a class="card" href="map.html">
 
 <div class="card-image explore">
@@ -842,8 +803,6 @@ ricostruiti in 3D e panorami a 360°.
 
 </div>
 </a>
-
-<!-- CATTURA -->
 
 <a class="card" href="guida.html">
 
@@ -863,8 +822,6 @@ il territorio con cura e precisione.
 </div>
 </a>
 
-<!-- PRESERVA -->
-
 <a class="card" href="missione.html">
 
 <div class="card-image preserve">
@@ -882,8 +839,6 @@ per il futuro, in formato digitale.
 
 </div>
 </a>
-
-<!-- CONDIVIDI -->
 
 <a class="card" href="missione.html">
 
@@ -917,7 +872,7 @@ e alla conoscenza del patrimonio diffuso.
 <div class="footer-inner">
 
 <div class="footer-logo">
-repl<span class="y">Y</span>ca
+  <img src="images/logo.png" alt="replYca">
 </div>
 
 <div class="footer-text">
