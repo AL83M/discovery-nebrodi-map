@@ -1,619 +1,2824 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>replYca – Aggiungi luogo</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>replYca – Gestione luoghi</title>
 
-  <style>
-    :root{
-      --bg:#0f1115;
-      --panel:#17191f;
-      --panel2:#1d2027;
-      --line:rgba(255,255,255,.10);
-      --text:#f7f7f8;
-      --muted:#9da2ad;
-      --ok:#dff7e5;
-      --okbg:#17321f;
-      --err:#ffd7d7;
-      --errbg:#351919;
-    }
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+>
 
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
-    body{padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+<style>
 
-    header{
-      height:68px;
-      padding:0 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      border-bottom:1px solid var(--line);
-      position:sticky;
-      top:0;
-      z-index:2000;
-      background:rgba(15,17,21,.96);
-      backdrop-filter:blur(14px);
-      -webkit-backdrop-filter:blur(14px);
-    }
+:root{
+  --bg:#0f1115;
+  --panel:#17191f;
+  --panel2:#1d2027;
+  --line:rgba(255,255,255,.10);
+  --text:#f7f7f8;
+  --muted:#9da2ad;
+  --ok:#dff7e5;
+  --okbg:#17321f;
+  --err:#ffd7d7;
+  --errbg:#351919;
+  --blue:#00a8ff;
+}
 
-    .brand{
-      color:#fff;
-      text-decoration:none;
-      font-weight:800;
-      font-size:24px;
-      letter-spacing:-.8px;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .back{
-      color:#fff;
-      text-decoration:none;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:10px 13px;
-      background:var(--panel);
-      font-weight:700;
-    }
+html,body{
+  margin:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+}
 
-    main{
-      width:min(760px,100%);
-      margin:0 auto;
-      padding:26px 18px 40px;
-    }
+body{
+  padding-bottom:calc(24px + env(safe-area-inset-bottom));
+}
 
-    h1{
-      font-size:34px;
-      margin:4px 0 8px;
-      letter-spacing:-1px;
-    }
+/* HEADER */
 
-    .intro{
-      color:var(--muted);
-      margin:0 0 26px;
-      line-height:1.45;
-    }
+header{
+  height:68px;
+  padding:0 18px;
 
-    .card{
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px;
-      margin-bottom:16px;
-    }
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
 
-    label{
-      display:block;
-      font-size:14px;
-      color:#c8cbd2;
-      margin:0 0 8px;
-      font-weight:700;
-    }
+  border-bottom:1px solid var(--line);
 
-    input,textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:var(--panel2);
-      color:#fff;
-      border-radius:13px;
-      padding:14px;
-      font-size:16px;
-      outline:none;
-    }
+  position:sticky;
+  top:0;
+  z-index:2000;
 
-    input:focus,textarea:focus{
-      border-color:rgba(255,255,255,.35);
-    }
+  background:rgba(15,17,21,.96);
 
-    textarea{
-      min-height:100px;
-      resize:vertical;
-    }
+  backdrop-filter:blur(14px);
+}
 
-    .field{margin-bottom:18px}
-    .field:last-child{margin-bottom:0}
+.brand{
+  color:#fff;
+  text-decoration:none;
 
-    .type-switch{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      background:#111318;
-      padding:5px;
-      border-radius:14px;
-    }
+  font-weight:800;
+  font-size:24px;
 
-    .type-switch button{
-      border:0;
-      border-radius:10px;
-      padding:13px 10px;
-      font-size:15px;
-      font-weight:800;
-      background:transparent;
-      color:var(--muted);
-    }
+  letter-spacing:-.8px;
+}
 
-    .type-switch button.active{
-      background:#fff;
-      color:#111;
-    }
+.brand span{
+  color:var(--blue);
+}
 
-    .map-head{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      margin-bottom:12px;
-    }
+.back{
+  color:#fff;
+  text-decoration:none;
 
-    .map-head strong{font-size:16px}
-    .map-head span{font-size:13px;color:var(--muted)}
+  border:1px solid var(--line);
+  border-radius:12px;
 
-    #pickerMap{
-      height:330px;
-      border-radius:16px;
-      overflow:hidden;
-      border:1px solid var(--line);
-      background:#ddd;
-    }
+  padding:10px 13px;
 
-    .loc-row{
-      display:flex;
-      gap:8px;
-      margin-top:10px;
-    }
+  background:var(--panel);
 
-    .mini-btn{
-      flex:1;
-      border:1px solid var(--line);
-      background:var(--panel2);
-      color:#fff;
-      border-radius:12px;
-      padding:11px 10px;
-      font-size:14px;
-      font-weight:700;
-    }
+  font-weight:700;
+}
 
-    .coords{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:10px;
-      line-height:1.4;
-      min-height:17px;
-    }
+/* MAIN */
 
-    details{
-      border-top:1px solid var(--line);
-      margin-top:18px;
-      padding-top:14px;
-    }
+main{
+  width:min(760px,100%);
+  margin:0 auto;
 
-    summary{
-      color:var(--muted);
-      cursor:pointer;
-      font-size:14px;
-      font-weight:700;
-    }
+  padding:26px 18px 40px;
+}
 
-    .advanced{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:14px;
-    }
+h1{
+  font-size:34px;
 
-    .advanced input{padding:12px;font-size:14px}
+  margin:4px 0 8px;
 
-    .publish{
-      width:100%;
-      border:0;
-      border-radius:16px;
-      padding:17px;
-      background:#fff;
-      color:#111;
-      font-size:17px;
-      font-weight:900;
-      cursor:pointer;
-    }
+  letter-spacing:-1px;
+}
 
-    .publish:disabled{opacity:.45}
+.intro{
+  color:var(--muted);
 
-    #status{
-      display:none;
-      margin-top:14px;
-      border-radius:14px;
-      padding:13px 14px;
-      line-height:1.4;
-      font-size:14px;
-    }
+  margin:0 0 26px;
 
-    #status.ok{display:block;background:var(--okbg);color:var(--ok)}
-    #status.err{display:block;background:var(--errbg);color:var(--err)}
-    #status.info{display:block;background:var(--panel2);color:#ddd}
+  line-height:1.45;
+}
 
-    .hint{
-      margin:8px 0 0;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.45;
-    }
+/* CARD */
 
-    .pin{
-      width:34px;height:34px;
-      border-radius:50%;
-      background:#171717;
-      border:3px solid #fff;
-      box-shadow:0 3px 12px rgba(0,0,0,.4);
-      display:grid;
-      place-items:center;
-    }
-    .pin:after{content:"+";font-size:22px;color:#fff;line-height:1}
+.card{
+  background:var(--panel);
 
-    @media(max-width:560px){
-      header{height:64px;padding:0 12px}
-      .brand{font-size:23px}
-      .back{padding:9px 11px;font-size:14px}
-      main{padding:22px 12px 32px}
-      h1{font-size:30px}
-      .card{padding:15px;border-radius:18px}
-      #pickerMap{height:290px}
-      .advanced{grid-template-columns:1fr}
-    }
-  </style>
+  border:1px solid var(--line);
+
+  border-radius:20px;
+
+  padding:18px;
+
+  margin-bottom:16px;
+}
+
+.field{
+  margin-bottom:18px;
+}
+
+.field:last-child{
+  margin-bottom:0;
+}
+
+label{
+  display:block;
+
+  font-size:14px;
+
+  color:#c8cbd2;
+
+  margin:0 0 8px;
+
+  font-weight:700;
+}
+
+input,
+textarea,
+select{
+
+  width:100%;
+
+  border:1px solid var(--line);
+
+  background:var(--panel2);
+
+  color:#fff;
+
+  border-radius:13px;
+
+  padding:14px;
+
+  font-size:16px;
+
+  outline:none;
+}
+
+select{
+  appearance:auto;
+}
+
+input:focus,
+textarea:focus,
+select:focus{
+  border-color:rgba(0,168,255,.8);
+}
+
+textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+/* MODE */
+
+.mode-switch{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:8px;
+
+  background:#111318;
+
+  padding:5px;
+
+  border-radius:14px;
+}
+
+.mode-switch button{
+
+  border:0;
+
+  border-radius:10px;
+
+  padding:13px 10px;
+
+  font-size:15px;
+
+  font-weight:800;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  cursor:pointer;
+}
+
+.mode-switch button.active{
+
+  background:#fff;
+
+  color:#111;
+}
+
+/* TYPE */
+
+.type-switch{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:8px;
+
+  background:#111318;
+
+  padding:5px;
+
+  border-radius:14px;
+}
+
+.type-switch button{
+
+  border:0;
+
+  border-radius:10px;
+
+  padding:13px 10px;
+
+  font-size:15px;
+
+  font-weight:800;
+
+  background:transparent;
+
+  color:var(--muted);
+
+  cursor:pointer;
+}
+
+.type-switch button.active{
+
+  background:#fff;
+
+  color:#111;
+}
+
+/* EXISTING PLACE */
+
+#existingWrap{
+  display:none;
+  margin-top:18px;
+}
+
+/* CONTENT STATUS */
+
+.content-state{
+
+  display:none;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+  margin-top:12px;
+}
+
+.state-box{
+
+  border:1px solid var(--line);
+
+  background:var(--panel2);
+
+  border-radius:13px;
+
+  padding:13px;
+
+  font-size:14px;
+}
+
+.state-box strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.state-ok{
+  color:#bff1c9;
+}
+
+.state-missing{
+  color:var(--muted);
+}
+
+/* MAP */
+
+.map-head{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  gap:12px;
+
+  margin-bottom:12px;
+}
+
+.map-head strong{
+  font-size:16px;
+}
+
+.map-head span{
+  font-size:13px;
+  color:var(--muted);
+}
+
+#pickerMap{
+
+  height:330px;
+
+  border-radius:16px;
+
+  overflow:hidden;
+
+  border:1px solid var(--line);
+
+  background:#ddd;
+}
+
+.loc-row{
+
+  display:flex;
+
+  gap:8px;
+
+  margin-top:10px;
+}
+
+.mini-btn{
+
+  flex:1;
+
+  border:1px solid var(--line);
+
+  background:var(--panel2);
+
+  color:#fff;
+
+  border-radius:12px;
+
+  padding:11px 10px;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+.coords{
+
+  font-size:12px;
+
+  color:var(--muted);
+
+  margin-top:10px;
+
+  line-height:1.4;
+
+  min-height:17px;
+}
+
+/* ADVANCED */
+
+details{
+
+  border-top:1px solid var(--line);
+
+  margin-top:18px;
+
+  padding-top:14px;
+}
+
+summary{
+
+  color:var(--muted);
+
+  cursor:pointer;
+
+  font-size:14px;
+
+  font-weight:700;
+}
+
+.advanced{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:10px;
+
+  margin-top:14px;
+}
+
+/* BUTTON */
+
+.publish{
+
+  width:100%;
+
+  border:0;
+
+  border-radius:16px;
+
+  padding:17px;
+
+  background:#fff;
+
+  color:#111;
+
+  font-size:17px;
+
+  font-weight:900;
+
+  cursor:pointer;
+}
+
+.publish:disabled{
+  opacity:.45;
+}
+
+/* STATUS */
+
+#status{
+
+  display:none;
+
+  margin-top:14px;
+
+  border-radius:14px;
+
+  padding:13px 14px;
+
+  line-height:1.4;
+
+  font-size:14px;
+}
+
+#status.ok{
+
+  display:block;
+
+  background:var(--okbg);
+
+  color:var(--ok);
+}
+
+#status.err{
+
+  display:block;
+
+  background:var(--errbg);
+
+  color:var(--err);
+}
+
+#status.info{
+
+  display:block;
+
+  background:var(--panel2);
+
+  color:#ddd;
+}
+
+.hint{
+
+  margin:8px 0 0;
+
+  color:var(--muted);
+
+  font-size:12px;
+
+  line-height:1.45;
+}
+
+/* PIN */
+
+.pin{
+
+  width:34px;
+  height:34px;
+
+  border-radius:50%;
+
+  background:#171717;
+
+  border:3px solid #fff;
+
+  box-shadow:0 3px 12px rgba(0,0,0,.4);
+
+  display:grid;
+
+  place-items:center;
+}
+
+.pin:after{
+
+  content:"+";
+
+  font-size:22px;
+
+  color:#fff;
+
+  line-height:1;
+}
+
+/* MOBILE */
+
+@media(max-width:560px){
+
+  header{
+    height:64px;
+    padding:0 12px;
+  }
+
+  .brand{
+    font-size:23px;
+  }
+
+  .back{
+    padding:9px 11px;
+    font-size:14px;
+  }
+
+  main{
+    padding:22px 12px 32px;
+  }
+
+  h1{
+    font-size:30px;
+  }
+
+  .card{
+    padding:15px;
+    border-radius:18px;
+  }
+
+  #pickerMap{
+    height:290px;
+  }
+
+  .advanced{
+    grid-template-columns:1fr;
+  }
+
+  .content-state{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
 </head>
+
+
 <body>
 
+
 <header>
-  <a class="brand" href="index.html">replYca</a>
-  <a class="back" href="map.html">← Mappa</a>
+
+<a class="brand" href="index.html">
+repl<span>Y</span>ca
+</a>
+
+<a class="back" href="map.html">
+← Mappa
+</a>
+
 </header>
 
+
 <main>
-  <h1>Nuovo luogo</h1>
-  <p class="intro">Pochi passaggi: dai un nome, scegli il punto sulla mappa, incolla il contenuto e pubblica.</p>
 
-  <section class="card">
-    <div class="field">
-      <label for="nome">Nome del luogo</label>
-      <input id="nome" autocomplete="off" placeholder="Es. Ponte dei Ninfi">
-    </div>
 
-    <div class="field">
-      <label>Tipo di contenuto</label>
-      <div class="type-switch">
-        <button id="btn3d" class="active" type="button" onclick="setTipo('fotogrammetria')">⬡ 3D</button>
-        <button id="btn360" type="button" onclick="setTipo('panorama360')">◉ 360°</button>
-      </div>
-    </div>
-  </section>
+<h1 id="pageTitle">
+Nuovo luogo
+</h1>
 
-  <section class="card">
-    <div class="map-head">
-      <strong>Posizione</strong>
-      <span>Tocca la mappa</span>
-    </div>
+<p id="pageIntro" class="intro">
+Aggiungi un nuovo luogo all'archivio replYca oppure aggiorna un luogo già esistente.
+</p>
 
-    <div id="pickerMap"></div>
 
-    <div class="loc-row">
-      <button class="mini-btn" type="button" onclick="usaMiaPosizione()">◎ Usa la mia posizione</button>
-      <button class="mini-btn" type="button" onclick="centraSuiLuoghi()">⌖ Centra sui luoghi</button>
-    </div>
+<!-- MODALITÀ -->
 
-    <div id="coordText" class="coords">Nessun punto selezionato.</div>
-    <div id="placeText" class="coords" style="margin-top:4px;"></div>
+<section class="card">
 
-    <details>
-      <summary>Località (opzionale)</summary>
-      <div class="advanced">
-        <input id="localita" placeholder="Comune / località">
-        <input id="provincia" placeholder="Provincia">
-        <input id="regione" placeholder="Regione">
-      </div>
-      <p class="hint">Questi campi non servono per scegliere il punto: sono solo informazioni mostrate nella scheda del luogo.</p>
-    </details>
-  </section>
+<div class="mode-switch">
 
-  <section class="card">
-    <div class="field">
-      <label id="linkLabel" for="link">Link Sketchfab</label>
-      <input id="link" type="url" inputmode="url" autocapitalize="none" placeholder="https://sketchfab.com/3d-models/...">
-      <p id="linkHint" class="hint">Incolla il normale link pubblico del modello. replYca ricava da solo l'ID.</p>
-    </div>
+<button
+id="modeNewBtn"
+class="active"
+type="button"
+onclick="setMode('new')">
 
-    <div class="field">
-      <label for="descrizione">Descrizione <span style="font-weight:400;color:#777">(facoltativa)</span></label>
-      <textarea id="descrizione" placeholder="Una breve descrizione del luogo..."></textarea>
-    </div>
-  </section>
+＋ Nuovo luogo
 
-  <button id="publishBtn" class="publish" type="button" onclick="pubblica()">Pubblica luogo</button>
-  <div id="status"></div>
+</button>
+
+
+<button
+id="modeEditBtn"
+type="button"
+onclick="setMode('edit')">
+
+✎ Aggiorna luogo
+
+</button>
+
+</div>
+
+
+<div id="existingWrap">
+
+<div class="field">
+
+<label for="existingPlace">
+Luogo esistente
+</label>
+
+<select
+id="existingPlace"
+onchange="caricaLuogoEsistente(this.value)">
+
+<option value="">
+Seleziona un luogo…
+</option>
+
+</select>
+
+
+<div
+id="contentState"
+class="content-state">
+
+<div
+id="state3d"
+class="state-box">
+</div>
+
+<div
+id="state360"
+class="state-box">
+</div>
+
+</div>
+
+<p class="hint">
+Il luogo verrà aggiornato senza creare un secondo marker.
+</p>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- DATI -->
+
+<section class="card">
+
+
+<div class="field">
+
+<label for="nome">
+Nome del luogo
+</label>
+
+<input
+id="nome"
+autocomplete="off"
+placeholder="Es. Ponte dei Ninfi">
+
+</div>
+
+
+<!-- CATEGORIA -->
+
+<div class="field">
+
+<label for="categoria">
+Categoria
+</label>
+
+<select id="categoria">
+
+<option value="Rudere">
+🏚️ Rudere
+</option>
+
+<option value="Castello">
+🏰 Castello
+</option>
+
+<option value="Edificio">
+🏛️ Edificio
+</option>
+
+<option value="Bunker">
+🛡️ Bunker / fortificazione
+</option>
+
+<option value="Paesaggio">
+🏞️ Paesaggio
+</option>
+
+<option value="Monumento">
+🗿 Monumento
+</option>
+
+<option value="Ponte">
+🌉 Ponte
+</option>
+
+<option value="Altro" selected>
+📍 Altro
+</option>
+
+</select>
+
+<p class="hint">
+La categoria servirà anche per filtrare la mappa in futuro.
+</p>
+
+</div>
+
+
+<!-- TIPO -->
+
+<div class="field">
+
+<label>
+Contenuto da aggiungere o modificare
+</label>
+
+
+<div class="type-switch">
+
+<button
+id="btn3d"
+class="active"
+type="button"
+onclick="setTipo('fotogrammetria')">
+
+⬡ 3D
+
+</button>
+
+
+<button
+id="btn360"
+type="button"
+onclick="setTipo('panorama360')">
+
+◉ 360°
+
+</button>
+
+</div>
+
+</div>
+
+
+</section>
+
+
+<!-- MAPPA -->
+
+<section class="card">
+
+
+<div class="map-head">
+
+<strong>
+Posizione
+</strong>
+
+<span>
+Tocca la mappa
+</span>
+
+</div>
+
+
+<div id="pickerMap"></div>
+
+
+<div class="loc-row">
+
+<button
+class="mini-btn"
+type="button"
+onclick="usaMiaPosizione()">
+
+◎ Usa la mia posizione
+
+</button>
+
+
+<button
+class="mini-btn"
+type="button"
+onclick="centraSuiLuoghi()">
+
+⌖ Centra sui luoghi
+
+</button>
+
+</div>
+
+
+<div
+id="coordText"
+class="coords">
+
+Nessun punto selezionato.
+
+</div>
+
+
+<div
+id="placeText"
+class="coords"
+style="margin-top:4px;">
+
+</div>
+
+
+<details>
+
+<summary>
+Località
+</summary>
+
+
+<div class="advanced">
+
+<input
+id="localita"
+placeholder="Comune / località">
+
+<input
+id="provincia"
+placeholder="Provincia">
+
+<input
+id="regione"
+placeholder="Regione">
+
+</div>
+
+</details>
+
+
+</section>
+
+
+<!-- CONTENUTO -->
+
+<section class="card">
+
+
+<div class="field">
+
+<label
+id="linkLabel"
+for="link">
+
+Link Sketchfab
+
+</label>
+
+
+<input
+id="link"
+type="text"
+inputmode="url"
+autocapitalize="none"
+placeholder="https://sketchfab.com/3d-models/...">
+
+
+<p
+id="linkHint"
+class="hint">
+
+Incolla il normale link pubblico del modello.
+replYca ricava automaticamente l'ID.
+
+</p>
+
+</div>
+
+
+<div class="field">
+
+<label for="descrizione">
+
+Descrizione
+
+<span style="font-weight:400;color:#777">
+(facoltativa)
+</span>
+
+</label>
+
+
+<textarea
+id="descrizione"
+placeholder="Una breve descrizione del luogo...">
+</textarea>
+
+</div>
+
+
+</section>
+
+
+<button
+id="publishBtn"
+class="publish"
+type="button"
+onclick="pubblica()">
+
+Pubblica luogo
+
+</button>
+
+
+<div id="status"></div>
+
+
 </main>
+
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
+
 <script>
-  const BACKEND_URL =
-    "https://script.google.com/macros/s/AKfycbz1kw3A7PgLTbOJWyVLUfwn2_bwkeepfdRkeYsxBktNuszUq_hTjie4p5Va0sEd8bP4/exec";
 
-  let tipo = "fotogrammetria";
-  let selectedLat = null;
-  let selectedLon = null;
-  let pickerMarker = null;
 
-  const pickerMap = L.map("pickerMap", { zoomControl:true }).setView([37.9, 14.5], 8);
+/* =================================
+   BACKEND
+================================= */
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom:19,
-    attribution:"&copy; OpenStreetMap contributors"
-  }).addTo(pickerMap);
+const BACKEND_URL =
+"https://script.google.com/macros/s/AKfycbz1kw3A7PgLTbOJWyVLUfwn2_bwkeepfdRkeYsxBktNuszUq_hTjie4p5Va0sEd8bP4/exec";
 
-  const pickerIcon = L.divIcon({
-    className:"",
-    html:'<div class="pin"></div>',
-    iconSize:[40,40],
-    iconAnchor:[20,20]
-  });
 
-  pickerMap.on("click", function(e){
-    scegliPunto(e.latlng.lat, e.latlng.lng, true);
-  });
+/* =================================
+   VARIABILI
+================================= */
 
-  function scegliPunto(lat, lon, zoom){
-    selectedLat = Number(lat);
-    selectedLon = Number(lon);
+let tipo = "fotogrammetria";
 
-    if(!pickerMarker){
-      pickerMarker = L.marker([selectedLat, selectedLon], {
-        icon:pickerIcon,
-        draggable:true
-      }).addTo(pickerMap);
+let mode = "new";
 
-      pickerMarker.on("dragend", function(ev){
-        const p = ev.target.getLatLng();
-        scegliPunto(p.lat, p.lng, false);
-      });
-    } else {
-      pickerMarker.setLatLng([selectedLat, selectedLon]);
-    }
+let selectedLat = null;
 
-    if(zoom) pickerMap.setView([selectedLat, selectedLon], Math.max(pickerMap.getZoom(), 14));
+let selectedLon = null;
 
-    document.getElementById("coordText").textContent =
-      "Punto selezionato · " + selectedLat.toFixed(6) + ", " + selectedLon.toFixed(6);
+let pickerMarker = null;
 
-    compilaLocalita(selectedLat, selectedLon);
+let archivioBounds = null;
+
+let archivioLuoghi = [];
+
+let luogoOriginale = null;
+
+
+/* =================================
+   MAPPA
+================================= */
+
+const pickerMap =
+L.map(
+  "pickerMap",
+  {
+    zoomControl:true
   }
+)
+.setView(
+  [37.9,14.5],
+  8
+);
 
-  let geocodeController = null;
 
-  async function compilaLocalita(lat, lon){
-    const placeText = document.getElementById("placeText");
-    placeText.textContent = "Riconosco la località…";
+L.tileLayer(
 
-    if(geocodeController) geocodeController.abort();
-    geocodeController = new AbortController();
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 
-    try{
-      const url =
-        "https://nominatim.openstreetmap.org/reverse" +
-        "?format=jsonv2" +
-        "&addressdetails=1" +
-        "&accept-language=it" +
-        "&lat=" + encodeURIComponent(lat) +
-        "&lon=" + encodeURIComponent(lon);
+{
 
-      const response = await fetch(url, {
-        signal: geocodeController.signal,
-        headers: { "Accept": "application/json" }
-      });
+maxZoom:19,
 
-      if(!response.ok) throw new Error("reverse geocoding non disponibile");
+attribution:
+"&copy; OpenStreetMap contributors"
 
-      const data = await response.json();
-      const a = data.address || {};
+}
 
-      const localita =
-        a.city ||
-        a.town ||
-        a.village ||
-        a.municipality ||
-        a.hamlet ||
-        a.suburb ||
-        a.city_district ||
-        "";
+).addTo(pickerMap);
 
-      let provincia =
-        a.county ||
-        a.state_district ||
-        "";
 
-      // Rende più puliti nomi italiani come "Città metropolitana di Messina".
-      provincia = provincia
-        .replace(/^Città metropolitana di\s+/i, "")
-        .replace(/^Libero consorzio comunale di\s+/i, "")
-        .replace(/^Provincia di\s+/i, "");
+const pickerIcon =
+L.divIcon({
 
-      const regione = a.state || a.region || "";
+className:"",
 
-      document.getElementById("localita").value = localita;
-      document.getElementById("provincia").value = provincia;
-      document.getElementById("regione").value = regione;
+html:
+'<div class="pin"></div>',
 
-      const parti = [localita, provincia, regione].filter(Boolean);
-      placeText.textContent = parti.length
-        ? "📍 " + parti.join(" · ")
-        : "Località non riconosciuta: puoi inserirla manualmente.";
+iconSize:
+[40,40],
 
-    }catch(err){
-      if(err.name === "AbortError") return;
-      placeText.textContent =
-        "Località non riconosciuta automaticamente. Il punto sulla mappa resta valido.";
-    }
-  }
+iconAnchor:
+[20,20]
 
-  function usaMiaPosizione(){
-    if(!navigator.geolocation){
-      stato("La posizione non è disponibile su questo dispositivo.", "err");
-      return;
-    }
+});
 
-    stato("Cerco la tua posizione…", "info");
 
-    navigator.geolocation.getCurrentPosition(
-      function(pos){
-        scegliPunto(pos.coords.latitude, pos.coords.longitude, true);
-        stato("Posizione selezionata. Puoi trascinare il punto per correggerla.", "ok");
-      },
-      function(){
-        stato("Non sono riuscito a leggere la posizione. Tocca direttamente la mappa.", "err");
-      },
-      { enableHighAccuracy:true, timeout:10000, maximumAge:30000 }
-    );
-  }
+pickerMap.on(
+"click",
 
-  let archivioBounds = null;
+function(e){
 
-  function centraSuiLuoghi(){
-    if(archivioBounds && archivioBounds.isValid()){
-      pickerMap.fitBounds(archivioBounds, { padding:[35,35], maxZoom:10 });
-    } else {
-      pickerMap.setView([41.9, 12.5], 5);
-    }
-  }
+scegliPunto(
+e.latlng.lat,
+e.latlng.lng,
+true
+);
 
-  function setTipo(nuovoTipo){
-    tipo = nuovoTipo;
+}
 
-    document.getElementById("btn3d").classList.toggle("active", tipo === "fotogrammetria");
-    document.getElementById("btn360").classList.toggle("active", tipo === "panorama360");
+);
 
-    const label = document.getElementById("linkLabel");
-    const input = document.getElementById("link");
-    const hint = document.getElementById("linkHint");
 
-    input.value = "";
+/* =================================
+   SELEZIONE PUNTO
+================================= */
 
-    if(tipo === "fotogrammetria"){
-      label.textContent = "Link Sketchfab";
-      input.placeholder = "https://sketchfab.com/3d-models/...";
-      hint.textContent = "Incolla il normale link pubblico del modello. replYca ricava da solo l'ID.";
-    }else{
-      label.textContent = "Link panorama 360°";
-      input.placeholder = "https://.../panorama.jpg";
-      hint.textContent = "Inserisci il link diretto alla foto equirettangolare 360°.";
-    }
-  }
+function scegliPunto(
+lat,
+lon,
+zoom,
+riconosciLocalita = true
+){
 
-  function estraiSketchfabId(link){
-    const match = String(link).match(/([a-f0-9]{32})(?:\?|\/|$)/i);
-    return match ? match[1] : null;
-  }
+selectedLat =
+Number(lat);
 
-  function creaLuogo(){
-    const nome = document.getElementById("nome").value.trim();
-    const link = document.getElementById("link").value.trim();
-    const descrizione = document.getElementById("descrizione").value.trim();
-    const localita = document.getElementById("localita").value.trim();
-    const provincia = document.getElementById("provincia").value.trim();
-    const regione = document.getElementById("regione").value.trim();
+selectedLon =
+Number(lon);
 
-    if(!nome) throw new Error("Scrivi il nome del luogo.");
-    if(selectedLat === null || selectedLon === null) throw new Error("Scegli il punto sulla mappa.");
-    if(!link) throw new Error(tipo === "fotogrammetria" ? "Incolla il link Sketchfab." : "Incolla il link della foto 360°.");
 
-    const base = {
-      nome,
-      tipo,
-      regione,
-      provincia,
-      localita,
-      lat:selectedLat,
-      lon:selectedLon,
-      categoria: tipo === "panorama360" ? "Panorama" : "Altro",
-      anno_scansione:new Date().getFullYear(),
-      descrizione: descrizione || "Archivio digitale - replYca"
-    };
+if(!pickerMarker){
 
-    if(tipo === "fotogrammetria"){
-      const id = estraiSketchfabId(link);
-      if(!id) throw new Error("Non riesco a riconoscere l'ID nel link Sketchfab.");
-      base.piattaforma = "sketchfab";
-      base.modello = id;
-      base.foto = "";
-    }else{
-      // Il map.html attuale legge la proprietà foto360.
-      base.foto360 = link;
-    }
+pickerMarker =
+L.marker(
 
-    return base;
-  }
+[selectedLat,selectedLon],
 
-  async function pubblica(){
-    const button = document.getElementById("publishBtn");
-    let luogo;
+{
 
-    try{
-      luogo = creaLuogo();
-    }catch(err){
-      stato(err.message, "err");
-      return;
-    }
+icon:pickerIcon,
 
-    button.disabled = true;
-    button.textContent = "Pubblicazione…";
-    stato("Invio il luogo a replYca…", "info");
+draggable:true
 
-    try{
-      const response = await fetch(BACKEND_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"text/plain;charset=utf-8" },
-        body:JSON.stringify(luogo)
-      });
+}
 
-      const risposta = await response.json();
+).addTo(pickerMap);
 
-      if(!risposta.success){
-        throw new Error(risposta.errore || "Il backend non ha accettato il luogo.");
-      }
 
-      stato(risposta.messaggio || "Luogo pubblicato correttamente ✓", "ok");
-      button.textContent = "Pubblicato ✓";
+pickerMarker.on(
 
-      setTimeout(function(){
-        window.location.href = "map.html";
-      }, 1200);
+"dragend",
 
-    }catch(err){
-      stato("Errore: " + err.message, "err");
-      button.disabled = false;
-      button.textContent = "Riprova pubblicazione";
-    }
-  }
+function(ev){
 
-  function stato(msg, tipo){
-    const box = document.getElementById("status");
-    box.className = tipo;
-    box.textContent = msg;
-  }
+const p =
+ev.target.getLatLng();
 
-  // Prova a centrare la mappa sull'archivio esistente, senza richiedere nulla all'utente.
-  fetch("luoghi.json")
-    .then(r => r.ok ? r.json() : [])
-    .then(luoghi => {
-      if(!Array.isArray(luoghi) || !luoghi.length) return;
-      const punti = luoghi
-        .filter(x => Number.isFinite(Number(x.lat)) && Number.isFinite(Number(x.lon)))
-        .map(x => [Number(x.lat), Number(x.lon)]);
-      if(punti.length){
-        archivioBounds = L.latLngBounds(punti);
-        pickerMap.fitBounds(archivioBounds, { padding:[35,35], maxZoom:10 });
-      }
-    })
-    .catch(() => {});
+scegliPunto(
+p.lat,
+p.lng,
+false,
+true
+);
+
+}
+
+);
+
+}
+
+else{
+
+pickerMarker.setLatLng(
+[selectedLat,selectedLon]
+);
+
+}
+
+
+if(zoom){
+
+pickerMap.setView(
+
+[selectedLat,selectedLon],
+
+Math.max(
+pickerMap.getZoom(),
+14
+)
+
+);
+
+}
+
+
+document
+.getElementById("coordText")
+.textContent =
+
+"Punto selezionato · " +
+
+selectedLat.toFixed(6) +
+
+", " +
+
+selectedLon.toFixed(6);
+
+
+if(riconosciLocalita){
+
+compilaLocalita(
+selectedLat,
+selectedLon
+);
+
+}
+
+}
+
+
+/* =================================
+   GEOCODING
+================================= */
+
+let geocodeController = null;
+
+
+async function compilaLocalita(
+lat,
+lon
+){
+
+const placeText =
+document.getElementById(
+"placeText"
+);
+
+
+placeText.textContent =
+"Riconosco la località…";
+
+
+if(geocodeController){
+
+geocodeController.abort();
+
+}
+
+
+geocodeController =
+new AbortController();
+
+
+try{
+
+
+const url =
+
+"https://nominatim.openstreetmap.org/reverse" +
+
+"?format=jsonv2" +
+
+"&addressdetails=1" +
+
+"&accept-language=it" +
+
+"&lat=" +
+
+encodeURIComponent(lat) +
+
+"&lon=" +
+
+encodeURIComponent(lon);
+
+
+const response =
+await fetch(
+
+url,
+
+{
+
+signal:
+geocodeController.signal,
+
+headers:{
+"Accept":"application/json"
+}
+
+}
+
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"Reverse geocoding non disponibile"
+);
+
+}
+
+
+const data =
+await response.json();
+
+
+const a =
+data.address || {};
+
+
+const localita =
+
+a.city ||
+
+a.town ||
+
+a.village ||
+
+a.municipality ||
+
+a.hamlet ||
+
+a.suburb ||
+
+a.city_district ||
+
+"";
+
+
+let provincia =
+
+a.county ||
+
+a.state_district ||
+
+"";
+
+
+provincia =
+provincia
+
+.replace(
+/^Città metropolitana di\s+/i,
+""
+)
+
+.replace(
+/^Libero consorzio comunale di\s+/i,
+""
+)
+
+.replace(
+/^Provincia di\s+/i,
+""
+);
+
+
+const regione =
+a.state ||
+a.region ||
+"";
+
+
+document
+.getElementById("localita")
+.value =
+localita;
+
+
+document
+.getElementById("provincia")
+.value =
+provincia;
+
+
+document
+.getElementById("regione")
+.value =
+regione;
+
+
+const parti =
+[
+localita,
+provincia,
+regione
+]
+.filter(Boolean);
+
+
+placeText.textContent =
+
+parti.length
+
+? "📍 " +
+parti.join(" · ")
+
+: "Località non riconosciuta.";
+
+
+}
+
+catch(err){
+
+
+if(
+err.name ===
+"AbortError"
+){
+
+return;
+
+}
+
+
+placeText.textContent =
+
+"Località non riconosciuta automaticamente.";
+
+}
+
+}
+
+
+/* =================================
+   MIA POSIZIONE
+================================= */
+
+function usaMiaPosizione(){
+
+
+if(!navigator.geolocation){
+
+stato(
+"La posizione non è disponibile.",
+"err"
+);
+
+return;
+
+}
+
+
+stato(
+"Cerco la tua posizione…",
+"info"
+);
+
+
+navigator
+.geolocation
+.getCurrentPosition(
+
+function(pos){
+
+scegliPunto(
+
+pos.coords.latitude,
+
+pos.coords.longitude,
+
+true
+
+);
+
+stato(
+"Posizione selezionata.",
+"ok"
+);
+
+},
+
+function(){
+
+stato(
+"Non riesco a leggere la posizione.",
+"err"
+);
+
+},
+
+{
+
+enableHighAccuracy:true,
+
+timeout:10000,
+
+maximumAge:30000
+
+}
+
+);
+
+}
+
+
+/* =================================
+   MODALITÀ
+================================= */
+
+function setMode(
+nuovoMode
+){
+
+mode =
+nuovoMode;
+
+
+document
+.getElementById("modeNewBtn")
+.classList
+.toggle(
+"active",
+mode === "new"
+);
+
+
+document
+.getElementById("modeEditBtn")
+.classList
+.toggle(
+"active",
+mode === "edit"
+);
+
+
+document
+.getElementById("existingWrap")
+.style.display =
+
+mode === "edit"
+? "block"
+: "none";
+
+
+document
+.getElementById("pageTitle")
+.textContent =
+
+mode === "new"
+? "Nuovo luogo"
+: "Aggiorna luogo";
+
+
+document
+.getElementById("publishBtn")
+.textContent =
+
+mode === "new"
+? "Pubblica luogo"
+: "Salva aggiornamento";
+
+
+if(mode === "new"){
+
+resetForm();
+
+}
+
+}
+
+
+/* =================================
+   RESET
+================================= */
+
+function resetForm(){
+
+
+luogoOriginale =
+null;
+
+
+document
+.getElementById("nome")
+.value = "";
+
+
+document
+.getElementById("categoria")
+.value =
+"Altro";
+
+
+document
+.getElementById("localita")
+.value = "";
+
+
+document
+.getElementById("provincia")
+.value = "";
+
+
+document
+.getElementById("regione")
+.value = "";
+
+
+document
+.getElementById("descrizione")
+.value = "";
+
+
+document
+.getElementById("link")
+.value = "";
+
+
+document
+.getElementById("existingPlace")
+.value = "";
+
+
+document
+.getElementById("contentState")
+.style.display =
+"none";
+
+
+selectedLat =
+null;
+
+
+selectedLon =
+null;
+
+
+document
+.getElementById("coordText")
+.textContent =
+"Nessun punto selezionato.";
+
+
+document
+.getElementById("placeText")
+.textContent =
+"";
+
+
+if(pickerMarker){
+
+pickerMap.removeLayer(
+pickerMarker
+);
+
+pickerMarker =
+null;
+
+}
+
+
+setTipo(
+"fotogrammetria"
+);
+
+}
+
+
+/* =================================
+   POPOLA LUOGHI
+================================= */
+
+function riempiSelectLuoghi(){
+
+
+const select =
+document.getElementById(
+"existingPlace"
+);
+
+
+select.innerHTML =
+
+'<option value="">' +
+
+'Seleziona un luogo…' +
+
+'</option>';
+
+
+archivioLuoghi
+.forEach(
+
+function(
+luogo,
+index
+){
+
+
+const option =
+document.createElement(
+"option"
+);
+
+
+option.value =
+String(index);
+
+
+option.textContent =
+
+luogo.nome +
+
+(
+
+luogo.localita ||
+luogo.provincia
+
+?
+
+" — " +
+
+[
+luogo.localita,
+luogo.provincia
+]
+.filter(Boolean)
+.join(" · ")
+
+:
+
+""
+
+);
+
+
+select.appendChild(
+option
+);
+
+}
+
+);
+
+}
+
+
+/* =================================
+   CARICA LUOGO ESISTENTE
+================================= */
+
+function caricaLuogoEsistente(
+value
+){
+
+
+if(value === ""){
+
+luogoOriginale =
+null;
+
+document
+.getElementById("contentState")
+.style.display =
+"none";
+
+return;
+
+}
+
+
+const luogo =
+archivioLuoghi[
+Number(value)
+];
+
+
+if(!luogo){
+
+return;
+
+}
+
+
+luogoOriginale =
+JSON.parse(
+JSON.stringify(luogo)
+);
+
+
+document
+.getElementById("nome")
+.value =
+luogo.nome || "";
+
+
+document
+.getElementById("categoria")
+.value =
+normalizzaCategoria(
+luogo.categoria
+);
+
+
+document
+.getElementById("localita")
+.value =
+luogo.localita ||
+luogo.comune ||
+"";
+
+
+document
+.getElementById("provincia")
+.value =
+luogo.provincia ||
+"";
+
+
+document
+.getElementById("regione")
+.value =
+luogo.regione ||
+"";
+
+
+document
+.getElementById("descrizione")
+.value =
+luogo.descrizione ||
+"";
+
+
+scegliPunto(
+
+Number(luogo.lat),
+
+Number(luogo.lon),
+
+true,
+
+false
+
+);
+
+
+const ha3D =
+Boolean(
+luogo.modello
+);
+
+
+const ha360 =
+Boolean(
+luogo.foto360
+);
+
+
+const state =
+document.getElementById(
+"contentState"
+);
+
+
+state.style.display =
+"grid";
+
+
+document
+.getElementById("state3d")
+.innerHTML =
+
+"<strong>⬡ Modello 3D</strong>" +
+
+'<span class="' +
+
+(
+ha3D
+? "state-ok"
+: "state-missing"
+)
+
++
+
+'">' +
+
+(
+ha3D
+? "✓ Presente"
+: "— Non presente"
+)
+
++
+
+"</span>";
+
+
+document
+.getElementById("state360")
+.innerHTML =
+
+"<strong>◉ Panorama 360°</strong>" +
+
+'<span class="' +
+
+(
+ha360
+? "state-ok"
+: "state-missing"
+)
+
++
+
+'">' +
+
+(
+ha360
+? "✓ Presente"
+: "— Non presente"
+)
+
++
+
+"</span>";
+
+
+if(ha3D){
+
+setTipo(
+"fotogrammetria"
+);
+
+}
+
+else if(ha360){
+
+setTipo(
+"panorama360"
+);
+
+}
+
+else{
+
+setTipo(
+"fotogrammetria"
+);
+
+}
+
+}
+
+
+/* =================================
+   NORMALIZZA VECCHIE CATEGORIE
+================================= */
+
+function normalizzaCategoria(
+categoria
+){
+
+const valore =
+String(
+categoria || ""
+)
+.toLowerCase();
+
+
+if(
+valore.includes("ponte")
+){
+return "Ponte";
+}
+
+
+if(
+valore.includes("castell")
+){
+return "Castello";
+}
+
+
+if(
+valore.includes("rudere") ||
+valore.includes("rovina")
+){
+return "Rudere";
+}
+
+
+if(
+valore.includes("bunker") ||
+valore.includes("fortific")
+){
+return "Bunker";
+}
+
+
+if(
+valore.includes("paesagg")
+){
+return "Paesaggio";
+}
+
+
+if(
+valore.includes("monument")
+){
+return "Monumento";
+}
+
+
+if(
+valore.includes("edificio")
+){
+return "Edificio";
+}
+
+
+return "Altro";
+
+}
+
+
+/* =================================
+   TIPO CONTENUTO
+================================= */
+
+function setTipo(
+nuovoTipo
+){
+
+
+tipo =
+nuovoTipo;
+
+
+document
+.getElementById("btn3d")
+.classList
+.toggle(
+
+"active",
+
+tipo ===
+"fotogrammetria"
+
+);
+
+
+document
+.getElementById("btn360")
+.classList
+.toggle(
+
+"active",
+
+tipo ===
+"panorama360"
+
+);
+
+
+const label =
+document.getElementById(
+"linkLabel"
+);
+
+
+const input =
+document.getElementById(
+"link"
+);
+
+
+const hint =
+document.getElementById(
+"linkHint"
+);
+
+
+if(
+tipo ===
+"fotogrammetria"
+){
+
+
+label.textContent =
+"Link Sketchfab";
+
+
+input.placeholder =
+"https://sketchfab.com/3d-models/...";
+
+
+hint.textContent =
+"Incolla il normale link pubblico del modello. replYca ricava automaticamente l'ID.";
+
+
+if(
+mode === "edit" &&
+luogoOriginale
+){
+
+
+input.value =
+
+luogoOriginale.modello
+
+?
+
+(
+
+luogoOriginale.piattaforma ===
+"sketchfab"
+
+?
+
+"https://sketchfab.com/models/" +
+luogoOriginale.modello
+
+:
+
+luogoOriginale.modello
+
+)
+
+:
+
+"";
+
+
+}
+
+else{
+
+input.value = "";
+
+}
+
+
+}
+
+else{
+
+
+label.textContent =
+"Panorama 360°";
+
+
+input.placeholder =
+"pontedeininfa360.JPG oppure https://.../panorama.jpg";
+
+
+hint.textContent =
+"Inserisci il nome del file presente su replYca oppure il link diretto alla foto equirettangolare 360°.";
+
+
+if(
+mode === "edit" &&
+luogoOriginale
+){
+
+input.value =
+luogoOriginale.foto360 ||
+"";
+
+}
+
+else{
+
+input.value = "";
+
+}
+
+
+}
+
+}
+
+
+/* =================================
+   SKETCHFAB
+================================= */
+
+function estraiSketchfabId(
+link
+){
+
+
+const match =
+String(link)
+.match(
+/([a-f0-9]{32})(?:\?|\/|$)/i
+);
+
+
+return match
+? match[1]
+: null;
+
+}
+
+
+/* =================================
+   CREA DATI
+================================= */
+
+function creaLuogo(){
+
+
+const nome =
+document
+.getElementById("nome")
+.value
+.trim();
+
+
+const categoria =
+document
+.getElementById("categoria")
+.value;
+
+
+const link =
+document
+.getElementById("link")
+.value
+.trim();
+
+
+const descrizione =
+document
+.getElementById("descrizione")
+.value
+.trim();
+
+
+const localita =
+document
+.getElementById("localita")
+.value
+.trim();
+
+
+const provincia =
+document
+.getElementById("provincia")
+.value
+.trim();
+
+
+const regione =
+document
+.getElementById("regione")
+.value
+.trim();
+
+
+if(!nome){
+
+throw new Error(
+"Scrivi il nome del luogo."
+);
+
+}
+
+
+if(
+selectedLat === null ||
+selectedLon === null
+){
+
+throw new Error(
+"Scegli il punto sulla mappa."
+);
+
+}
+
+
+if(!link){
+
+throw new Error(
+
+tipo === "fotogrammetria"
+
+?
+
+"Incolla il link Sketchfab."
+
+:
+
+"Inserisci la foto 360°."
+
+);
+
+}
+
+
+if(
+mode === "edit" &&
+!luogoOriginale
+){
+
+throw new Error(
+"Seleziona prima un luogo esistente."
+);
+
+}
+
+
+/* CREA O CLONA */
+
+const base =
+
+mode === "edit"
+
+?
+
+JSON.parse(
+JSON.stringify(
+luogoOriginale
+)
+)
+
+:
+
+{};
+
+
+/* DATI COMUNI */
+
+base.nome =
+nome;
+
+
+base.categoria =
+categoria;
+
+
+base.regione =
+regione;
+
+
+base.provincia =
+provincia;
+
+
+base.localita =
+localita;
+
+
+base.lat =
+selectedLat;
+
+
+base.lon =
+selectedLon;
+
+
+base.anno_scansione =
+
+base.anno_scansione ||
+
+new Date()
+.getFullYear();
+
+
+base.descrizione =
+
+descrizione ||
+
+base.descrizione ||
+
+"Archivio digitale - replYca";
+
+
+/* CONTENUTO */
+
+if(
+tipo ===
+"fotogrammetria"
+){
+
+
+const id =
+estraiSketchfabId(
+link
+);
+
+
+if(!id){
+
+throw new Error(
+"Non riesco a riconoscere l'ID nel link Sketchfab."
+);
+
+}
+
+
+base.piattaforma =
+"sketchfab";
+
+
+base.modello =
+id;
+
+
+if(
+base.foto ===
+undefined
+){
+
+base.foto = "";
+
+}
+
+
+}
+
+else{
+
+
+base.foto360 =
+link;
+
+
+}
+
+
+/* AGGIORNAMENTO */
+
+if(
+mode === "edit"
+){
+
+
+base._azione =
+"aggiorna";
+
+
+base._originale = {
+
+nome:
+luogoOriginale.nome,
+
+lat:
+luogoOriginale.lat,
+
+lon:
+luogoOriginale.lon
+
+};
+
+
+}
+
+
+return base;
+
+}
+
+
+/* =================================
+   PUBBLICA
+================================= */
+
+async function pubblica(){
+
+
+const button =
+document.getElementById(
+"publishBtn"
+);
+
+
+let luogo;
+
+
+try{
+
+
+luogo =
+creaLuogo();
+
+
+}
+
+catch(err){
+
+
+stato(
+err.message,
+"err"
+);
+
+
+return;
+
+}
+
+
+button.disabled =
+true;
+
+
+button.textContent =
+
+mode === "new"
+
+?
+
+"Pubblicazione…"
+
+:
+
+"Aggiornamento…";
+
+
+stato(
+
+mode === "new"
+
+?
+
+"Invio il luogo a replYca…"
+
+:
+
+"Aggiorno il luogo su replYca…",
+
+"info"
+
+);
+
+
+try{
+
+
+const response =
+await fetch(
+
+BACKEND_URL,
+
+{
+
+method:"POST",
+
+headers:{
+"Content-Type":
+"text/plain;charset=utf-8"
+},
+
+body:
+JSON.stringify(
+luogo
+)
+
+}
+
+);
+
+
+const risposta =
+await response.json();
+
+
+if(
+!risposta.success
+){
+
+throw new Error(
+
+risposta.errore ||
+
+"Il backend non ha accettato il luogo."
+
+);
+
+}
+
+
+stato(
+
+risposta.messaggio ||
+
+(
+
+mode === "new"
+
+?
+
+"Luogo pubblicato correttamente ✓"
+
+:
+
+"Luogo aggiornato correttamente ✓"
+
+),
+
+"ok"
+
+);
+
+
+button.textContent =
+
+mode === "new"
+
+?
+
+"Pubblicato ✓"
+
+:
+
+"Aggiornato ✓";
+
+
+setTimeout(
+
+function(){
+
+window.location.href =
+"map.html";
+
+},
+
+1200
+
+);
+
+
+}
+
+catch(err){
+
+
+stato(
+
+"Errore: " +
+err.message,
+
+"err"
+
+);
+
+
+button.disabled =
+false;
+
+
+button.textContent =
+
+mode === "new"
+
+?
+
+"Riprova pubblicazione"
+
+:
+
+"Riprova aggiornamento";
+
+}
+
+}
+
+
+/* =================================
+   STATUS
+================================= */
+
+function stato(
+msg,
+tipo
+){
+
+
+const box =
+document.getElementById(
+"status"
+);
+
+
+box.className =
+tipo;
+
+
+box.textContent =
+msg;
+
+}
+
+
+/* =================================
+   CENTRA ARCHIVIO
+================================= */
+
+function centraSuiLuoghi(){
+
+
+if(
+archivioBounds &&
+archivioBounds.isValid()
+){
+
+
+pickerMap.fitBounds(
+
+archivioBounds,
+
+{
+
+padding:
+[35,35],
+
+maxZoom:
+10
+
+}
+
+);
+
+
+}
+
+else{
+
+
+pickerMap.setView(
+[41.9,12.5],
+5
+);
+
+
+}
+
+}
+
+
+/* =================================
+   CARICA ARCHIVIO
+================================= */
+
+fetch(
+"luoghi.json"
+)
+
+.then(
+
+r =>
+r.ok
+?
+r.json()
+:
+[]
+
+)
+
+.then(
+
+luoghi => {
+
+
+archivioLuoghi =
+Array.isArray(luoghi)
+?
+luoghi
+:
+[];
+
+
+riempiSelectLuoghi();
+
+
+if(
+!archivioLuoghi.length
+){
+
+return;
+
+}
+
+
+const punti =
+archivioLuoghi
+
+.filter(
+
+x =>
+Number.isFinite(
+Number(x.lat)
+)
+&&
+Number.isFinite(
+Number(x.lon)
+)
+
+)
+
+.map(
+
+x => [
+
+Number(x.lat),
+
+Number(x.lon)
+
+]
+
+);
+
+
+if(
+punti.length
+){
+
+
+archivioBounds =
+L.latLngBounds(
+punti
+);
+
+
+pickerMap.fitBounds(
+
+archivioBounds,
+
+{
+
+padding:
+[35,35],
+
+maxZoom:
+10
+
+}
+
+);
+
+
+}
+
+
+}
+
+)
+
+.catch(
+
+function(err){
+
+console.error(
+"Errore caricamento luoghi:",
+err
+);
+
+}
+
+);
+
+
 </script>
+
+
 </body>
 </html>
