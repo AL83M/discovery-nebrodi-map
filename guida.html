@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>replYca – Come creare una fotogrammetria</title>
+  <style>
+:root{
+  --bg:#0f1115;
+  --panel:#17191f;
+  --panel2:#1d2027;
+  --line:rgba(255,255,255,.10);
+  --text:#f7f7f8;
+  --muted:#9da2ad;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
+a{color:inherit}
+header{
+  height:68px;
+  padding:0 18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(15,17,21,.96);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+}
+.brand{
+  text-decoration:none;
+  font-weight:800;
+  font-size:24px;
+  letter-spacing:-.8px;
+}
+nav{display:flex;gap:10px;align-items:center}
+nav a{
+  text-decoration:none;
+  color:#d8dbe2;
+  font-size:14px;
+  font-weight:700;
+  padding:10px 12px;
+  border-radius:10px;
+}
+nav a:hover{background:var(--panel)}
+main{
+  width:min(980px,100%);
+  margin:0 auto;
+  padding:44px 18px 70px;
+}
+.eyebrow{
+  color:#b8bcc6;
+  font-size:14px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+h1{
+  font-size:clamp(38px,7vw,72px);
+  line-height:.98;
+  letter-spacing:-2.5px;
+  margin:12px 0 18px;
+  max-width:900px;
+}
+.lead{
+  max-width:760px;
+  color:#b5bac4;
+  font-size:19px;
+  line-height:1.55;
+}
+.hero{
+  padding:28px 0 30px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+  margin-top:26px;
+}
+.card{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:22px;
+}
+.card h2,.card h3{margin-top:0}
+.card p{color:#b6bbc5;line-height:1.6}
+.step{
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+}
+.num{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  background:#fff;
+  color:#111;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  font-weight:900;
+}
+.tip{
+  margin-top:24px;
+  border-left:3px solid #fff;
+  padding:6px 0 6px 16px;
+  color:#c8ccd4;
+  line-height:1.6;
+}
+.cta{
+  margin-top:34px;
+  background:#fff;
+  color:#111;
+  border-radius:24px;
+  padding:28px;
+}
+.cta h2{margin:0 0 8px;font-size:30px;letter-spacing:-1px}
+.cta p{margin:0 0 18px;color:#333;line-height:1.5}
+.cta a{
+  display:inline-block;
+  text-decoration:none;
+  background:#111;
+  color:#fff;
+  border-radius:14px;
+  padding:13px 16px;
+  font-weight:800;
+}
+.quote{
+  font-size:clamp(28px,5vw,48px);
+  line-height:1.1;
+  letter-spacing:-1.5px;
+  margin:30px 0;
+  max-width:850px;
+}
+.footer-note{
+  margin-top:34px;
+  color:#7f8490;
+  font-size:13px;
+  line-height:1.5;
+}
+@media(max-width:760px){
+  header{height:auto;min-height:64px;align-items:flex-start;padding:14px 12px}
+  nav{gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  nav a{padding:8px 9px;font-size:13px}
+  main{padding:30px 12px 50px}
+  .grid{grid-template-columns:1fr}
+  .lead{font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="index.html">replYca</a>
+  <nav>
+    <a href="map.html">Mappa</a>
+    <a href="guida.html">Impara</a>
+    <a href="missione.html">Missione</a>
+    <a href="admin.html">Proponi</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">Impara</div>
+    <h1>Come creare una fotogrammetria</h1>
+    <p class="lead">
+      La fotogrammetria trasforma una serie di fotografie sovrapposte in un modello 3D.
+      Non serve partire con attrezzatura complessa: ciò che conta davvero è fotografare bene,
+      con metodo e continuità.
+    </p>
+  </section>
+
+  <div class="grid">
+    <section class="card step"><div class="num">1</div><div><h2>Scegli il soggetto</h2><p>
+      Inizia con qualcosa di fermo e ben visibile: una statua, un piccolo ponte, un rudere,
+      una facciata o un manufatto. Evita soggetti lucidi, trasparenti o in movimento.
+    </p></div></section>
+
+    <section class="card step"><div class="num">2</div><div><h2>Scatta con molta sovrapposizione</h2><p>
+      Ogni foto deve condividere una parte importante della scena con quella precedente.
+      Come regola pratica, cerca circa il 70–80% di sovrapposizione.
+    </p></div></section>
+
+    <section class="card step"><div class="num">3</div><div><h2>Copri tutti gli angoli</h2><p>
+      Muoviti attorno al soggetto e realizza più passaggi a diverse altezze e inclinazioni.
+      Le zone non fotografate non potranno essere ricostruite.
+    </p></div></section>
+
+    <section class="card step"><div class="num">4</div><div><h2>Mantieni luce e messa a fuoco stabili</h2><p>
+      Preferisci luce uniforme e diffusa. Evita ombre che cambiano continuamente e forti
+      variazioni di esposizione tra uno scatto e l'altro.
+    </p></div></section>
+
+    <section class="card step"><div class="num">5</div><div><h2>Elabora le immagini</h2><p>
+      Importa le fotografie in un software di fotogrammetria. Il programma allinea gli scatti,
+      genera una nuvola di punti e poi una mesh tridimensionale.
+    </p></div></section>
+
+    <section class="card step"><div class="num">6</div><div><h2>Pulisci e pubblica</h2><p>
+      Rimuovi le parti inutili, controlla la mesh e le texture, poi pubblica il modello
+      su una piattaforma 3D. A quel punto può essere proposto all'archivio replYca.
+    </p></div></section>
+  </div>
+
+  <section class="card" style="margin-top:18px">
+    <h2>Da terra o con drone?</h2>
+    <div class="grid">
+      <div>
+        <h3>📱 Da terra</h3>
+        <p>Ideale per statue, reperti, facciate, piccoli edifici e dettagli architettonici.
+        Puoi usare smartphone o fotocamera.</p>
+      </div>
+      <div>
+        <h3>🚁 Con drone</h3>
+        <p>Utile per ponti, ruderi, coperture e aree più ampie. Pianifica passaggi regolari
+        e rispetta sempre le regole di volo applicabili nel luogo in cui operi.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="tip">
+    Più fotografie non significa automaticamente un modello migliore: servono immagini nitide,
+    ben sovrapposte e distribuite in modo uniforme attorno al soggetto.
+  </div>
+
+  <section class="cta">
+    <h2>Hai creato un modello?</h2>
+    <p>Proponilo a replYca. Prima di comparire sulla mappa verrà revisionato.</p>
+    <a href="admin.html">+ Proponi un luogo</a>
+  </section>
+
+  <div class="footer-note">
+    replYca è un progetto di documentazione digitale. La guida è pensata come introduzione pratica
+    e non sostituisce procedure professionali di rilievo, conservazione o restauro.
+  </div>
+</main>
+</body>
+</html>
